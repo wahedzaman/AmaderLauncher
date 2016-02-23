@@ -1,0 +1,272 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="horizontal"
+        android:layout_weight="15"
+
+        android:padding="0dp" >
+    <!--
+        <TextView
+            android:paddingLeft="2dp"
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="A"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="B"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="C"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="D"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="E"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="F"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="G"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="H"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="I"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="J"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="K"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="L"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="M"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="N"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="O"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="P"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="Q"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="R"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="S"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="T"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="U"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="V"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="W"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="X"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="Y"
+            android:textColor="@android:color/white"/>
+        <TextView
+            android:layout_weight="1"
+            android:gravity="clip_horizontal|center_vertical"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:text="Z"
+            android:textColor="@android:color/white"/>
+        !-->
+          
+     
+    </LinearLayout>
+
+    <GridView
+        android:padding="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_marginBottom="5dp"
+        android:layout_marginLeft="5dp"
+        android:layout_marginRight="5dp"
+        android:id="@+id/appDrawerGridView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_weight="3"
+        android:background="@drawable/roundedbd"
+        android:gravity="center"
+        android:horizontalSpacing="0dp"
+        android:numColumns="5"
+        android:stretchMode="columnWidth"
+        android:verticalSpacing="5dp" >
+    </GridView>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_horizontal|center_vertical"
+        android:layout_weight="14"
+
+        android:orientation="horizontal" >
+
+        <ImageButton
+
+            android:layout_weight="1"
+            android:background="@null"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:onClick="dialerClicked"
+            android:src="@drawable/dialer" />
+
+        <ImageButton
+            android:layout_weight="1"
+             android:background="@null"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:onClick="messageClicked"
+            android:src="@drawable/message" />
+
+        <ImageButton
+            android:layout_weight="1"
+             android:background="@null"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:onClick="webClicked"
+            android:src="@drawable/chrome" />
+
+        <ImageButton
+
+            android:layout_weight="1"
+             android:background="@null"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:onClick="cameraClicked"
+            android:src="@drawable/camera" />
+        <ImageButton
+
+            android:layout_weight="1"
+            android:background="@null"
+            android:layout_width="48dp"
+            android:layout_height="48dp"
+            android:onClick="homeClicked"
+            android:src="@drawable/home" />
+    </LinearLayout>
+
+</LinearLayout>

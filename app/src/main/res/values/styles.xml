@@ -1,0 +1,27 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.NoActionBar">
+        <!-- Customize your theme here. -->
+    </style>
+
+    <style name="CustomTheme" parent="AppTheme">
+        <item name="android:windowBackground">@android:style/Theme.Holo.Wallpaper.NoTitleBar</item>
+        <item name="android:windowNoTitle">true</item>
+    </style>
+
+
+    <style name="Theme.Transparent" parent="AppTheme">
+        <item name="android:windowBackground">@android:style/Theme.Holo.Wallpaper.NoTitleBar</item>
+        <item name="android:windowContentOverlay">@null</item>
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowIsFloating">true</item>
+        <item name="android:backgroundDimEnabled">false</item>
+    </style>
+
+    <style name="AppFullScreenTheme" parent="Theme.AppCompat.Light.NoActionBar">
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+        <item name="android:windowContentOverlay">@null</item>
+    </style>
+</resources>
