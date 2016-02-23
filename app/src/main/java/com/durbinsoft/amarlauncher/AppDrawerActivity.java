@@ -16,6 +16,7 @@ import android.service.notification.StatusBarNotification;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.DisplayMetrics;
+import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -67,6 +68,8 @@ public class AppDrawerActivity extends Activity {
         appDrawerView.setVisibility(View.INVISIBLE);
 
         slideDrawerView.setVisibility(View.INVISIBLE);
+
+
 
 
 
@@ -233,4 +236,7 @@ public class AppDrawerActivity extends Activity {
             appDrawerView.setOnItemClickListener(new AppDrawerClickListener(getApplicationContext(), packages));
         }
     }
+
+
+
 }

@@ -5,9 +5,9 @@
         <!-- Customize your theme here. -->
     </style>
 
-    <style name="CustomTheme" parent="AppTheme">
-        <item name="android:windowBackground">@android:style/Theme.Holo.Wallpaper.NoTitleBar</item>
-        <item name="android:windowNoTitle">true</item>
+    <style name="CustomTheme" parent="android:Theme.Holo.Wallpaper.NoTitleBar">
+        <item name="android:windowTranslucentNavigation">false</item>
+        <item name="android:windowTranslucentStatus">true</item>
     </style>
 
 
