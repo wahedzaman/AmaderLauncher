@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name = "blackTransparent"> #70000000</color>
-    <color name = "customTransparent2">#c3000000</color>
+    <color name = "customTransparent2">#e04b6574</color>
+    <color name="blueTransparent">#8694cfff</color>
+    <color name = "blackTransparent2">#b44b6574</color>
+
+    <color name="blue">#ee6bdbf0</color>
+    <color name = "blurTransparent">#2e7777ff</color>
 
 </resources>
