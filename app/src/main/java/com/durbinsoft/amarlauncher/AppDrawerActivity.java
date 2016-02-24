@@ -8,25 +8,14 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
-import android.media.Image;
-import android.net.Uri;
-import android.os.Build;
-import android.provider.MediaStore;
-import android.service.notification.StatusBarNotification;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.provider.MediaStore;
 import android.util.DisplayMetrics;
-import android.view.ContextMenu;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.view.View;
-import android.view.Window;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
-import java.lang.reflect.Method;
 
 public class AppDrawerActivity extends Activity {
 
@@ -35,7 +24,7 @@ public class AppDrawerActivity extends Activity {
 
     GridView appDrawerView;
     LinearLayout appTrayView, slideDrawerView, mainHomeView;
-    ImageButton appDrawerHomeButton;
+    ImageButton appDrawerHomeButton, appDrawerBuuton1,appDrawerBuuton2,appDrawerBuuton3,appDrawerBuuton4;
 
     private boolean isAppDrawerVisible = false;
     private boolean isAppTrayVisible = true;
@@ -44,6 +33,8 @@ public class AppDrawerActivity extends Activity {
     int widthPixels=dmetrics.widthPixels;
     int heightPixels=dmetrics.heightPixels;
 
+    private boolean appTrayFadeInOut, appTraySlideInOUt, appTrayZoomInOut,appTraySlideLeftRight;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -51,11 +42,18 @@ public class AppDrawerActivity extends Activity {
         setContentView(R.layout.app_drawer);
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        appTrayFadeInOut = false;
+        appTraySlideInOUt = true;
 
         packages = new ApplicationPackage(this);
         packages.initializePackages();
 
         customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
+
+        appDrawerBuuton1 = (ImageButton) findViewById(R.id.appDrawerButton1);
+        appDrawerBuuton2 = (ImageButton) findViewById(R.id.appDrawerButton2);
+        appDrawerBuuton3 = (ImageButton) findViewById(R.id.appDrawerButton3);
+        appDrawerBuuton4 = (ImageButton) findViewById(R.id.appDrawerButton4);
 
         appDrawerHomeButton = (ImageButton) findViewById(R.id.homeButtonAppDrawer);
         mainHomeView = (LinearLayout) findViewById(R.id.mainHomeView);
@@ -93,10 +91,63 @@ public class AppDrawerActivity extends Activity {
             }
 
         });
+
+        slideDrawerView.setOnTouchListener(new OnSwipeTouchListener(this) {
+
+            public void onSwipeLeft() {
+                getSliderDrawerInView(false);
+            }
+
+
+        });
         appDrawerHomeButton.setOnTouchListener(new OnSwipeTouchListener(this) {
 
             public void onSingleTap(){
                 homeClicked();
+            }
+
+        });
+
+        // appDrawer application click and swipe handler
+        appDrawerBuuton1.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onSwipeTop() {
+                cameraClicked();
+            }
+
+            public void onSingleTap() {
+               dialerClicked();
+            }
+
+        });
+        appDrawerBuuton2.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onSwipeTop() {
+                webClicked();
+            }
+
+
+            public void onSingleTap() {
+                messageClicked();
+            }
+
+        });
+        appDrawerBuuton3.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onSwipeTop() {
+                dialerClicked();
+            }
+
+
+            public void onSingleTap() {
+                webClicked();
+            }
+
+        });
+        appDrawerBuuton4.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onSwipeTop() {
+                messageClicked();
+            }
+
+            public void onSingleTap() {
+                cameraClicked();
             }
 
         });
@@ -110,25 +161,25 @@ public class AppDrawerActivity extends Activity {
         registerReceiver(new PackageChangeBroadCastListener(),filter);
     }
 
-    public void dialerClicked(View v){
+    public void dialerClicked(){
         Intent intent = new Intent(Intent.ACTION_DIAL);
         startActivity(intent);
     }
 
-    public void messageClicked(View v){
+    public void messageClicked(){
         Intent intent = new Intent(Intent.ACTION_MAIN);
         //intent.addCategory(Intent.CATEGORY_DEFAULT);
         intent.setType("vnd.android-dir/mms-sms");
         startActivity(intent);
     }
 
-    public void webClicked(View v){
+    public void webClicked(){
         PackageManager packagemanager = getPackageManager();
         Intent  launchIntent = packagemanager.getLaunchIntentForPackage("com.android.chrome");
         this.startActivity(launchIntent);
     }
 
-    public void cameraClicked(View v){
+    public void cameraClicked(){
         Intent intent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
         this.startActivity(intent);
     }
@@ -146,62 +197,12 @@ public class AppDrawerActivity extends Activity {
 
     //this will open or close the app drawer.
     public void homeClicked(){
-       if(isAppDrawerVisible){
-           appDrawerView.animate()
-                   .translationY(heightPixels)
-                   .alpha(0.0f)
-                   .setListener(new AnimatorListenerAdapter() {
-                       @Override
-                       public void onAnimationEnd(Animator animation) {
-                           super.onAnimationEnd(animation);
-                           appDrawerView.setVisibility(View.INVISIBLE);
-                       }
-                   });
-           isAppDrawerVisible = false;
-       }else{
-           appDrawerView.setVisibility(View.VISIBLE);
-           appDrawerView.setAlpha(0.0f);
-           appDrawerView.animate().translationY(0).alpha(1.0f)
-                   .setListener(new AnimatorListenerAdapter() {
-                       @Override
-                       public void onAnimationEnd(Animator animation) {
-                           super.onAnimationEnd(animation);
-                           appDrawerView.setVisibility(View.VISIBLE);
-                       }
-                   });;
-           isAppDrawerVisible = true;
+       if(appTrayFadeInOut){
+           animateFadeInOut();
        }
-    }
-
-    // This will hide or open the application tray (bottom)
-    // ** Later to be used swipe...
-
-    public void arrowClicked(){
-        if(isAppTrayVisible){
-            appTrayView.animate()
-                    .translationX(widthPixels)
-                    .alpha(0.0f)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            appTrayView.setVisibility(View.INVISIBLE);
-                        }
-                    });
-            isAppTrayVisible = false;
-        }else{
-            appTrayView.setVisibility(View.VISIBLE);
-            appTrayView.setAlpha(0.0f);
-            appTrayView.animate().translationX(0).alpha(1.0f)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            appTrayView.setVisibility(View.INVISIBLE);
-                        }
-                    });
-            isAppTrayVisible = true;
-        }
+        else if(appTraySlideInOUt){
+           animateSlideInOut();
+       }
     }
 
     private void getSliderDrawerInView(boolean direction){
@@ -223,6 +224,52 @@ public class AppDrawerActivity extends Activity {
         }
     }
 
+    public void animateSlideInOut(){
+        if(isAppDrawerVisible){
+            appDrawerView.animate().translationY(mainHomeView.getHeight()).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    appDrawerView.setVisibility(View.VISIBLE);
+                }
+            });
+            isAppDrawerVisible = false;
+        }else{
+            appDrawerView.setVisibility(View.VISIBLE);
+            appDrawerView.setAlpha(0.5f);
+            appDrawerView.animate().alpha(1.0f).translationY(heightPixels);
+            isAppDrawerVisible = true;
+        }
+    }
+
+    public void animateFadeInOut(){
+        if(isAppDrawerVisible){
+            appDrawerView.animate()
+                    .alpha(0.0f)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            appDrawerView.setVisibility(View.INVISIBLE);
+                        }
+                    });
+            isAppDrawerVisible = false;
+        }else{
+            appDrawerView.setVisibility(View.VISIBLE);
+            appDrawerView.setAlpha(0.0f);
+            appDrawerView.animate().alpha(1.0f)
+                    .setListener(new AnimatorListenerAdapter() {
+                        @Override
+                        public void onAnimationEnd(Animator animation) {
+                            super.onAnimationEnd(animation);
+                            appDrawerView.setVisibility(View.VISIBLE);
+                        }
+                    });;
+            isAppDrawerVisible = true;
+        }
+    }
+
+
     public class PackageChangeBroadCastListener extends BroadcastReceiver{
 
 
@@ -236,7 +283,5 @@ public class AppDrawerActivity extends Activity {
             appDrawerView.setOnItemClickListener(new AppDrawerClickListener(getApplicationContext(), packages));
         }
     }
-
-
 
 }

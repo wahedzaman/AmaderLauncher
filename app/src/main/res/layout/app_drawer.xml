@@ -74,7 +74,7 @@
             android:background="@null"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:onClick="dialerClicked"
+            android:id="@+id/appDrawerButton1"
             android:src="@drawable/dialer" />
 
         <ImageButton
@@ -82,7 +82,7 @@
              android:background="@null"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:onClick="messageClicked"
+            android:id="@+id/appDrawerButton2"
             android:src="@drawable/message" />
 
         <ImageButton
@@ -90,7 +90,7 @@
              android:background="@null"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:onClick="webClicked"
+            android:id="@+id/appDrawerButton3"
             android:src="@drawable/chrome" />
 
         <ImageButton
@@ -99,7 +99,7 @@
             android:background="@null"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            android:onClick="cameraClicked"
+            android:id="@+id/appDrawerButton4"
             android:src="@drawable/camera" />
             </LinearLayout>
 
@@ -115,7 +115,7 @@
 
         <LinearLayout
             android:id="@+id/slideDrawer"
-            android:layout_width="280dp"
+            android:layout_width="300dp"
             android:layout_height="match_parent"
             android:orientation="vertical"
             android:background="@color/customTransparent2">
