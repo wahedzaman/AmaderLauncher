@@ -5,6 +5,7 @@ import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
+import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
@@ -13,19 +14,25 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.hardware.Camera;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
+import android.view.Window;
+import android.view.WindowManager;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SeekBar;
+import android.widget.Toast;
 
 
-public class AppDrawerActivity extends Activity {
+public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     ApplicationPackage packages;
     CustomApplicationDrawerAdapter customDrawerAdapter;
@@ -38,15 +45,23 @@ public class AppDrawerActivity extends Activity {
     private boolean isBottomDrawerVisible = false;
 
     DisplayMetrics dmetrics = new DisplayMetrics();
+
     int widthPixels=dmetrics.widthPixels;
     int heightPixels=dmetrics.heightPixels;
 
     private boolean appTrayFadeInOut, appTraySlideInOUt, appTrayZoomInOut,appTraySlideLeftRight;
 
-    private boolean wifiState,bluetoothState,rotationState, airplaneState;
+    private boolean wifiState,bluetoothState,rotationState, airplaneState, lightState, isFlashOn;
 
     private WifiManager wifiManager;
     private BluetoothAdapter bluetoothAdapter;
+
+    private SeekBar brightnessBar;
+    private ImageView airplaneToggle,wifiToggle,bluetoothToggle,rotationToggle,lightToggle;
+
+    private Camera camera;
+    Camera.Parameters params;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,11 +77,24 @@ public class AppDrawerActivity extends Activity {
 
         customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
 
+        airplaneToggle = (ImageView)findViewById(R.id.airplaneToggle);
+        wifiToggle = (ImageView)findViewById(R.id.wifiToggle);
+        bluetoothToggle = (ImageView)findViewById(R.id.bluetoothToggle);
+        rotationToggle = (ImageView)findViewById(R.id.rotationToggle);
+        lightToggle = (ImageView)findViewById(R.id.lightToggle);
+
+        airplaneToggle.setOnClickListener(this);
+        wifiToggle.setOnClickListener(this);
+        bluetoothToggle.setOnClickListener(this);
+        rotationToggle.setOnClickListener(this);
+        lightToggle.setOnClickListener(this);
+
         appDrawerBuuton1 = (ImageButton) findViewById(R.id.appDrawerButton1);
         appDrawerBuuton2 = (ImageButton) findViewById(R.id.appDrawerButton2);
         appDrawerBuuton3 = (ImageButton) findViewById(R.id.appDrawerButton3);
         appDrawerBuuton4 = (ImageButton) findViewById(R.id.appDrawerButton4);
 
+        brightnessBar = (SeekBar) findViewById(R.id.bottomDrawerAppBrightnessSlider);
 
         appDrawerHomeButton = (ImageButton) findViewById(R.id.homeButtonAppDrawer);
         bottomDrawerView = (LinearLayout) findViewById(R.id.bottomDrawerViewHolder);
@@ -91,12 +119,14 @@ public class AppDrawerActivity extends Activity {
         bottomDrawerView.setVisibility(View.INVISIBLE);
 
 
-        checkSystemStatus();
+
 
         //below are the code to handle swipe gestures...
 
         mainHomeView.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onSwipeTop() {
+                checkSystemStatus();
+                getCamera();
                 getBottomDrawerInView();
             }
 
@@ -188,7 +218,25 @@ public class AppDrawerActivity extends Activity {
         filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
         filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
         filter.addDataScheme("package");
-        registerReceiver(new PackageChangeBroadCastListener(),filter);
+        registerReceiver(new PackageChangeBroadCastListener(), filter);
+
+        brightnessBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
+            int seekBarProgress = 0;
+
+            public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+                seekBarProgress = progress;
+
+            }
+
+            public void onStartTrackingTouch(SeekBar seekBar) {
+
+            }
+
+            public void onStopTrackingTouch(SeekBar seekBar) {
+                changeBrightness(seekBarProgress);
+            }
+
+        });
     }
 
     public void dialerClicked(){
@@ -205,7 +253,7 @@ public class AppDrawerActivity extends Activity {
 
     public void webClicked(){
         PackageManager packagemanager = getPackageManager();
-        Intent  launchIntent = packagemanager.getLaunchIntentForPackage("com.android.chrome");
+        Intent launchIntent = packagemanager.getLaunchIntentForPackage("com.android.chrome");
         this.startActivity(launchIntent);
     }
 
@@ -279,7 +327,7 @@ public class AppDrawerActivity extends Activity {
     }
 
     public void animateSlideInOut(){
-        if(isAppDrawerVisible){
+        if(isAppDrawerVisible) {
             appDrawerView.animate().translationY(mainHomeView.getHeight()).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -297,7 +345,7 @@ public class AppDrawerActivity extends Activity {
     }
 
     public void animateFadeInOut(){
-        if(isAppDrawerVisible){
+        if(isAppDrawerVisible) {
             appDrawerView.animate()
                     .alpha(0.0f)
                     .setListener(new AnimatorListenerAdapter() {
@@ -324,21 +372,26 @@ public class AppDrawerActivity extends Activity {
     }
 
     private void changeBrightness(int bVal){
-        switch (bVal){
-            case 121:
+
+            if( bVal == 999) {
                 //auto mode
-                break;
-            default:
+            }
+           else {
+                bVal = bVal *2;
                 //any value 0-10 but check, if value is under 10, then always keep it 10
-                if(bVal<=10){
-                    //always brightness val to 10
-                }
-        }
+                if(bVal < 0)
+                    bVal = 0;
+                else if(bVal > 255)
+                    bVal = 255;
+
+                Log.d("bval", "" + bVal);
+                ContentResolver cResolver = this.getApplicationContext().getContentResolver();
+                Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, bVal);
+            }
     }
 
     private void changeWifiState(boolean val){
         wifiManager.setWifiEnabled(val);
-        //update ui gfx here for the bottom drawer toggle. create another method and call that to update gfx.
     }
 
     private void changeBluetoothState(boolean val){
@@ -350,7 +403,7 @@ public class AppDrawerActivity extends Activity {
     }
 
     private void changeRotationState(boolean val){
-        Settings.System.putInt( getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, val ? 1 : 0);
+        Settings.System.putInt(getContentResolver(), Settings.System.ACCELEROMETER_ROTATION, val ? 1 : 0);
     }
 
     private void changeAireplaneState(boolean val){
@@ -360,9 +413,11 @@ public class AppDrawerActivity extends Activity {
     private void checkSystemStatus(){
         //check wifi state,bluetooth state, rotation state, brightness state and set the value accordingly to the view.
         //call the updateGfx method to update gfx AND BROADCAST LISTERNER FOR ALL THESE SERVICE,, SO THAT ANY CHANGE CAN EFFECT IMMEDIATELY.
+
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
         wifiState = wifiManager.isWifiEnabled();
-
+        airplaneState = false;
+        lightState = isFlashOn;
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         bluetoothState = bluetoothAdapter.isEnabled();
@@ -378,14 +433,160 @@ public class AppDrawerActivity extends Activity {
 
         }
 
+        Bitmap tmpImg ;
+        if(wifiState){
+            tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.wifiwhite);
+           // Toast.makeText(AppDrawerActivity.this, "state: on", Toast.LENGTH_SHORT).show();
+        }else{
+            tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.wifiblack);
+           // Toast.makeText(AppDrawerActivity.this, "state: off", Toast.LENGTH_SHORT).show();
+        }
+        wifiToggle.setImageBitmap(tmpImg);
+
+        if(rotationState){
+            tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.rotationwhite);
+            // Toast.makeText(AppDrawerActivity.this, "state: on", Toast.LENGTH_SHORT).show();
+        }else{
+            tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.rotationblack);
+            // Toast.makeText(AppDrawerActivity.this, "state: off", Toast.LENGTH_SHORT).show();
+        }
+        rotationToggle.setImageBitmap(tmpImg);
+
+        if(bluetoothState){
+            tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.bluetoothwhite);
+            // Toast.makeText(AppDrawerActivity.this, "state: on", Toast.LENGTH_SHORT).show();
+        }else{
+            tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.bluetoothblack);
+            // Toast.makeText(AppDrawerActivity.this, "state: off", Toast.LENGTH_SHORT).show();
+        }
+        bluetoothToggle.setImageBitmap(tmpImg);
+        if(lightState){
+            tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.lightwhite);
+            // Toast.makeText(AppDrawerActivity.this, "state: on", Toast.LENGTH_SHORT).show();
+        }else{
+            tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.lightblack);
+            // Toast.makeText(AppDrawerActivity.this, "state: off", Toast.LENGTH_SHORT).show();
+        }
+        lightToggle.setImageBitmap(tmpImg);
 
 
     }
 
+    private void getCamera() {
+        if (camera == null) {
+            try {
+                camera = Camera.open();
+                params = camera.getParameters();
+            } catch (RuntimeException e) {
+            }
+        }
+    }
+
+
+    private void turnOnFlash() {
+        if (!isFlashOn) {
+            if (camera == null || params == null) {
+                return;
+            }
+            params = camera.getParameters();
+            params.setFlashMode(Camera.Parameters.FLASH_MODE_TORCH);
+            camera.setParameters(params);
+            camera.startPreview();
+            isFlashOn = true;
+        }
+
+    }
+
+
+    private void turnOffFlash() {
+        if (isFlashOn) {
+            if (camera == null || params == null) {
+                return;
+            }
+            params = camera.getParameters();
+            params.setFlashMode(Camera.Parameters.FLASH_MODE_OFF);
+            camera.setParameters(params);
+            camera.stopPreview();
+            isFlashOn = false;
+        }
+        releaseCamera();
+    }
+
+    private void releaseCamera(){
+        if(camera != null){
+            camera.release();
+            camera = null;
+        }
+    }
+
+
     public void preferenceButtonClicked(View v){
         //method is invoked when called from the app_drawer.xml layout
         Intent prefs = new Intent(this, PreferenceScreen.class);
-        startActivityForResult(prefs,0);
+        startActivity(prefs);
+    }
+
+    @Override
+    public void onClick(View v) {
+        Bitmap tmpImg;
+        switch (v.getId()){
+            case R.id.airplaneToggle:
+                 if(airplaneState){
+                    airplaneState = false;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.airplaneblack);
+                }else{
+                    airplaneState = true;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.airplanewhite);
+                }
+                airplaneToggle.setImageBitmap(tmpImg);
+                changeAireplaneState(airplaneState);
+                break;
+            case R.id.wifiToggle:
+                if(wifiState){
+                    wifiState = false;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.wifiblack);
+                }else{
+                    wifiState = true;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.wifiwhite);
+                }
+                wifiToggle.setImageBitmap(tmpImg);
+                changeWifiState(wifiState);
+                break;
+            case R.id.bluetoothToggle:
+                if(bluetoothState){
+                    bluetoothState = false;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.bluetoothblack);
+                }else{
+                    bluetoothState = true;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.bluetoothwhite);
+                }
+                bluetoothToggle.setImageBitmap(tmpImg);
+                changeBluetoothState(bluetoothState);
+                break;
+            case R.id.rotationToggle:
+                if(rotationState){
+                    rotationState = false;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.rotationblack);
+                }else{
+                    rotationState = true;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.rotationwhite);
+                }
+                rotationToggle.setImageBitmap(tmpImg);
+                changeRotationState(rotationState);
+                break;
+            case R.id.lightToggle:
+                if(lightState){
+                    lightState = false;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.lightblack);
+                    turnOffFlash();
+                }else{
+                    lightState = true;
+                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.lightwhite);
+                    turnOnFlash();
+                }
+                lightToggle.setImageBitmap(tmpImg);
+                break;
+        }
     }
 
     public class PackageChangeBroadCastListener extends BroadcastReceiver{

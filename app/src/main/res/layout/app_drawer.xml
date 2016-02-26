@@ -278,6 +278,7 @@
                 android:layout_weight="8"/>
 
             <ImageView
+                android:id="@+id/airplaneToggle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/airplaneblack"
@@ -287,6 +288,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="8"/>
             <ImageView
+                android:id="@+id/wifiToggle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/wifiblack"
@@ -296,6 +298,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="8"/>
             <ImageView
+                android:id="@+id/bluetoothToggle"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:src="@drawable/bluetoothblack"
@@ -305,6 +308,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="8"/>
             <ImageView
+                android:id="@+id/rotationToggle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/rotationblack"
@@ -314,6 +318,7 @@
                 android:layout_height="match_parent"
                 android:layout_weight="8"/>
             <ImageView
+                android:id="@+id/lightToggle"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:src="@drawable/lightblack"
