@@ -24,12 +24,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.CalendarView;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.SeekBar;
 import android.widget.Toast;
+
+import java.util.Calendar;
 
 
 public class AppDrawerActivity extends Activity implements View.OnClickListener{
@@ -59,8 +62,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private SeekBar brightnessBar;
     private ImageView airplaneToggle,wifiToggle,bluetoothToggle,rotationToggle,lightToggle;
 
+    private CalendarView calendar;
+
     private Camera camera;
     Camera.Parameters params;
+
 
 
     @Override
@@ -95,6 +101,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         appDrawerBuuton4 = (ImageButton) findViewById(R.id.appDrawerButton4);
 
         brightnessBar = (SeekBar) findViewById(R.id.bottomDrawerAppBrightnessSlider);
+
+        calendar = (CalendarView) findViewById(R.id.calendar);
+
 
         appDrawerHomeButton = (ImageButton) findViewById(R.id.homeButtonAppDrawer);
         bottomDrawerView = (LinearLayout) findViewById(R.id.bottomDrawerViewHolder);
@@ -308,6 +317,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private void getBottomDrawerInView(){
         // direction true == in and false == out
         if(isBottomDrawerVisible == false){
+            initializeCalendar();
           //  mainHomeView.animate().translationX(slideDrawerView.getWidth());
             bottomDrawerView.setVisibility(View.VISIBLE);
             bottomDrawerView.setAlpha(0.0f);
@@ -589,7 +599,19 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    public class PackageChangeBroadCastListener extends BroadcastReceiver{
+    public void initializeCalendar() {
+        calendar.setEnabled(false);
+       calendar.setShowWeekNumber(false);
+        calendar.setFirstDayOfWeek(1);
+        calendar.setSelectedWeekBackgroundColor(getResources().getColor(R.color.green));
+        calendar.setUnfocusedMonthDateColor(getResources().getColor(R.color.transparent));
+        calendar.setWeekSeparatorLineColor(getResources().getColor(R.color.transparent));
+        calendar.setSelectedDateVerticalBar(R.color.darkgreen);
+    }
+
+
+
+public class PackageChangeBroadCastListener extends BroadcastReceiver{
 
 
         @Override
