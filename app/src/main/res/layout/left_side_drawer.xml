@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:background="#303030"
+            android:id="@+id/slideDrawer"
+            android:layout_width="320dp"
+            android:layout_height="match_parent"
+            android:orientation="vertical"
+            >
+            <LinearLayout
+                android:layout_marginTop="20dp"
+                android:background="@drawable/sideimg9"
+                android:layout_width="match_parent"
+                android:layout_height="200dp"
+                android:orientation="vertical">
+
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"/>
+                <ImageView
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"/>
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_weight="2"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:textSize="20dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:layout_weight="1"
+                        android:gravity="center_vertical|center"
+                        android:textColor="#ffffff"
+                        android:text="Md.Waheduzzaman"/>
+                    <ImageView
+                        android:layout_weight="4"
+                        android:layout_width="fill_parent"
+                        android:layout_height="fill_parent"
+                        android:src="@drawable/preference"/>
+
+                </LinearLayout>
+
+            </LinearLayout>
+
+
+            <ScrollView
+                android:scrollbars="none"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
+
+                    <LinearLayout
+                        android:layout_marginTop="10dp"
+                        android:background="@android:color/black"
+                        android:layout_width="fill_parent"
+                        android:layout_height="150dp"
+                        android:orientation="vertical">
+
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:orientation="horizontal"
+                            android:layout_weight="1">
+                            <LinearLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:orientation="vertical"
+                                android:layout_weight="2">
+                                <TextView
+                                    android:textColor="@android:color/white"
+                                    android:layout_width="fill_parent"
+                                    android:layout_height="fill_parent"
+                                    android:gravity="center_horizontal"
+                                    android:text="আজ"
+                                    android:textSize="30dp"/>
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:orientation="vertical"
+                                android:layout_weight="1">
+                                <TextView
+                                    android:gravity="center_horizontal|center_vertical"
+                                    android:textColor="@android:color/white"
+                                    android:layout_width="fill_parent"
+                                    android:layout_height="fill_parent"
+                                    android:text="১২:২০"
+                                    android:textSize="60dp"/>
+
+                            </LinearLayout>
+                            <LinearLayout
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:orientation="vertical"
+                                android:layout_weight="2">
+                                <TextView
+                                    android:gravity="center_vertical"
+                                    android:textColor="@android:color/white"
+                                    android:layout_width="fill_parent"
+                                    android:layout_height="fill_parent"
+                                    android:text="পি,এম"
+                                    android:textSize="22dp"/>
+
+                            </LinearLayout>
+
+
+                        </LinearLayout>
+                        <LinearLayout
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_weight="2"
+                            android:orientation="horizontal">
+                            <TextView
+                                android:textSize="22dp"
+                                android:layout_width="fill_parent"
+                                android:layout_height="fill_parent"
+                                android:textColor="@android:color/white"
+                                android:text="রবিবার,ফেরুয়ারী ২৮,২০১৬"
+                                android:gravity="center_vertical|center_horizontal"/>
+
+                        </LinearLayout>
+
+
+
+                    </LinearLayout>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/test4"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/test2"/>
+                    <ImageView
+                        android:layout_marginTop="10dp"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:src="@drawable/test1"/>
+                </LinearLayout>
+
+            </ScrollView>
+
+
+        </LinearLayout>
+
+    </LinearLayout>

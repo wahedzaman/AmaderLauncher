@@ -7,5 +7,7 @@
 
     <color name="blue">#ee6bdbf0</color>
     <color name = "blurTransparent">#2e7777ff</color>
+    <color name="grey">#c3464646</color>
+
 
 </resources>
