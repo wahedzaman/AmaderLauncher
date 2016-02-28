@@ -1,13 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <color name = "blackTransparent"> #70000000</color>
-    <color name = "customTransparent2">#e04b6574</color>
+    <color name = "customTransparent2">#8c9b9b9b</color>
     <color name="blueTransparent">#8694cfff</color>
     <color name = "blackTransparent2">#b44b6574</color>
 
     <color name="blue">#ee6bdbf0</color>
     <color name = "blurTransparent">#2e7777ff</color>
     <color name="grey">#c3464646</color>
+    <color name="greyTransparent">#a4000000</color>
 
     <item name="transparent" type="color">#00FFFFFF</item>
     <item name="green" type="color">#4499CC00</item>

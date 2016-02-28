@@ -13,7 +13,7 @@ android:orientation="vertical">
 </LinearLayout>
 
     <LinearLayout
-        android:background="@drawable/blueblurbg"
+        android:background="@drawable/orange"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_weight="1.3"

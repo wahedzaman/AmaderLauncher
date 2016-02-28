@@ -75,6 +75,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         setContentView(R.layout.app_drawer);
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+
         appTrayFadeInOut = false;
         appTraySlideInOUt = true;
 
