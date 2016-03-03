@@ -3,34 +3,45 @@ package com.durbinsoft.amarlauncher;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.net.wifi.WifiManager;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.UiThread;
 import android.util.DisplayMetrics;
 import android.util.Log;
+import android.view.TextureView;
 import android.view.View;
 import android.view.Window;
 import android.view.WindowManager;
+import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ScrollView;
 import android.widget.SeekBar;
+import android.widget.TextView;
 import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.Calendar;
 
@@ -42,9 +53,10 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     GridView appDrawerView;
     LinearLayout appTrayView, slideDrawerView, mainHomeView, bottomDrawerView;
-    ImageButton appDrawerHomeButton, appDrawerBuuton1,appDrawerBuuton2,appDrawerBuuton3,appDrawerBuuton4;
+    ImageButton appDrawerHomeButton, appDrawerBuuton1,appDrawerBuuton2,appDrawerBuuton3,appDrawerBuuton4,bottomDrawerbutton1,bottomDrawerbutton2,bottomDrawerbutton3,bottomDrawerbutton4,bottomDrawerbutton5,bottomDrawerbutton6,bottomDrawerbutton7,bottomDrawerbutton8,bottomDrawerbutton9,bottomDrawerbutton10;
+
     private boolean isAppDrawerVisible = false;
-    private boolean isAppTrayVisible = true;
+    private boolean isAppTrayVisible = false;
     private boolean isBottomDrawerVisible = false;
 
     DisplayMetrics dmetrics = new DisplayMetrics();
@@ -62,10 +74,19 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private SeekBar brightnessBar;
     private ImageView airplaneToggle,wifiToggle,bluetoothToggle,rotationToggle,lightToggle;
 
+    private TextView leftDrawerClockTimeText,leftDrawerClockDateText,leftDrawerNameText;
+
     private CalendarView calendar;
+    private PreferenceClassForData sPrefs;
 
     private Camera camera;
     Camera.Parameters params;
+
+
+    private boolean initialSetup;
+    PackageManager packagemanager;
+
+    CalenderConversion myCalenderConversion;
 
 
 
@@ -75,26 +96,45 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         setContentView(R.layout.app_drawer);
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
+        packagemanager = getPackageManager();
+        sPrefs = new PreferenceClassForData(this);
+        sPrefs.initializeSharedPrefs();
+        initialSetup = sPrefs.getBool();
+
+
 
         appTrayFadeInOut = false;
         appTraySlideInOUt = true;
+
+        myCalenderConversion = new CalenderConversion();
 
         packages = new ApplicationPackage(this);
         packages.initializePackages();
 
         customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
 
+        initiateView();
+        setAllAdapterAndEverything();
+
+
+        if(initialSetup){
+            Intent i = new Intent(this,AppChooserApplication.class);
+            startActivity(i);
+        }
+    }
+
+
+    private void initiateView(){
         airplaneToggle = (ImageView)findViewById(R.id.airplaneToggle);
         wifiToggle = (ImageView)findViewById(R.id.wifiToggle);
         bluetoothToggle = (ImageView)findViewById(R.id.bluetoothToggle);
         rotationToggle = (ImageView)findViewById(R.id.rotationToggle);
         lightToggle = (ImageView)findViewById(R.id.lightToggle);
 
-        airplaneToggle.setOnClickListener(this);
-        wifiToggle.setOnClickListener(this);
-        bluetoothToggle.setOnClickListener(this);
-        rotationToggle.setOnClickListener(this);
-        lightToggle.setOnClickListener(this);
+        leftDrawerClockDateText = (TextView)findViewById(R.id.leftclockDateTv);
+        leftDrawerClockTimeText = (TextView)findViewById(R.id.leftclockTimeTv);
+        leftDrawerNameText = (TextView) findViewById(R.id.leftDrawerNameText);
+
 
         appDrawerBuuton1 = (ImageButton) findViewById(R.id.appDrawerButton1);
         appDrawerBuuton2 = (ImageButton) findViewById(R.id.appDrawerButton2);
@@ -105,31 +145,66 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         calendar = (CalendarView) findViewById(R.id.calendar);
 
-
         appDrawerHomeButton = (ImageButton) findViewById(R.id.homeButtonAppDrawer);
         bottomDrawerView = (LinearLayout) findViewById(R.id.bottomDrawerViewHolder);
         mainHomeView = (LinearLayout) findViewById(R.id.mainHomeView);
         slideDrawerView = (LinearLayout) findViewById(R.id.slideDrawer);
         appTrayView = (LinearLayout) findViewById(R.id.appTrayHolder);
         appDrawerView = (GridView) findViewById(R.id.appDrawerGridView);
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+        initialSetup = sPrefs.getBool();
+        if(initialSetup == false){
+            setBottomDrawerApps();
+            setAllAdapterAndEverything();
+        }
+    }
+
+    private void setAllAdapterAndEverything(){
+
+        airplaneToggle.setOnClickListener(this);
+        wifiToggle.setOnClickListener(this);
+        bluetoothToggle.setOnClickListener(this);
+        rotationToggle.setOnClickListener(this);
+        lightToggle.setOnClickListener(this);
+
+
         appDrawerView.setAdapter(customDrawerAdapter);
+
+        appDrawerView.setTextFilterEnabled(true);
 
         appDrawerView.setOnItemClickListener(new AppDrawerClickListener(this, packages));
 
         //Drawable d = getResources().getDrawable(R.drawable.blueblurbg);
-      //  d.setAlpha(200);
-      //  bottomDrawerView.setBackground(d);
+        //  d.setAlpha(200);
+        //  bottomDrawerView.setBackground(d);
 
-      //  Bitmap tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.bluetoothblack);
-     //   BitmapDrawable draw = new BitmapDrawable(Bitmap.createScaledBitmap(tmpImg, 16, 16, false));
-     //   airplaneToggleButton.setBackground(draw);
-
-        appDrawerView.setVisibility(View.INVISIBLE);
-        slideDrawerView.setVisibility(View.INVISIBLE);
-        bottomDrawerView.setVisibility(View.INVISIBLE);
+        //  Bitmap tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.bluetoothblack);
+        //   BitmapDrawable draw = new BitmapDrawable(Bitmap.createScaledBitmap(tmpImg, 16, 16, false));
+        //   airplaneToggleButton.setBackground(draw);
 
 
 
+
+
+        if(isBottomDrawerVisible){
+            //do nothing
+        }else{
+            bottomDrawerView.setVisibility(View.INVISIBLE);
+        }
+        if(isAppDrawerVisible){
+            //do nothing
+        }else{
+            appDrawerView.setVisibility(View.INVISIBLE);
+        }
+        if(isAppTrayVisible){
+            //do nothing
+        }else{
+            slideDrawerView.setVisibility(View.INVISIBLE);
+        }
 
         //below are the code to handle swipe gestures...
 
@@ -141,11 +216,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSwipeRight() {
-                getSliderDrawerInView(true);
+                getSliderDrawerInView();
             }
 
             public void onSwipeLeft() {
-                getSliderDrawerInView(false);
+                getSliderDrawerInView();
             }
 
             public void onSwipeBottom() {
@@ -165,7 +240,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         slideDrawerView.setOnTouchListener(new OnSwipeTouchListener(this) {
 
             public void onSwipeLeft() {
-                getSliderDrawerInView(false);
+                getSliderDrawerInView();
             }
 
 
@@ -174,6 +249,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
             public void onSingleTap(){
                 homeClicked();
+            }
+            public void onSwipeTop() {
+                getBottomDrawerInView();
             }
 
         });
@@ -185,7 +263,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-               dialerClicked();
+                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(packages.getPackageName(sPrefs.getSelectedApp(1)));
+                startActivity(launchIntent);;
             }
 
         });
@@ -196,7 +275,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
 
             public void onSingleTap() {
-                messageClicked();
+                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(packages.getPackageName(sPrefs.getSelectedApp(2)));
+                startActivity(launchIntent);
             }
 
         });
@@ -207,7 +287,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
 
             public void onSingleTap() {
-                webClicked();
+                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(packages.getPackageName(sPrefs.getSelectedApp(3)));
+                startActivity(launchIntent);
             }
 
         });
@@ -217,7 +298,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                cameraClicked();
+                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(packages.getPackageName(sPrefs.getSelectedApp(4)));
+                startActivity(launchIntent);
             }
 
         });
@@ -249,6 +331,18 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
     }
 
+    private void setBottomDrawerApps(){
+        int [] items = new int[4] ;
+        items[0] = sPrefs.getSelectedApp(1);
+        items[1] = sPrefs.getSelectedApp(2);
+        items[2] = sPrefs.getSelectedApp(3);
+        items[3] = sPrefs.getSelectedApp(4);
+        appDrawerBuuton1.setImageDrawable(packages.getIcon(items[0]));
+        appDrawerBuuton2.setImageDrawable(packages.getIcon(items[1]));
+        appDrawerBuuton3.setImageDrawable(packages.getIcon(items[2]));
+        appDrawerBuuton4.setImageDrawable(packages.getIcon(items[3]));
+    }
+
     public void dialerClicked(){
         Intent intent = new Intent(Intent.ACTION_DIAL);
         startActivity(intent);
@@ -278,10 +372,10 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         if(isAppDrawerVisible){
             homeClicked();
         }
-        else if(isAppTrayVisible){
-            getSliderDrawerInView(false);
+         else if(isAppTrayVisible){
+            getSliderDrawerInView();
         }
-         if(isBottomDrawerVisible){
+         else if(isBottomDrawerVisible){
             getBottomDrawerInView();
         }
     }
@@ -296,13 +390,23 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
        }
     }
 
-    private void getSliderDrawerInView(boolean direction){
+    private void getSliderDrawerInView(){
         // direction true == in and false == out
-        if(direction){
+        if(!isAppTrayVisible){
+            ScrollView sv = (ScrollView)findViewById(R.id.scrl);
+            sv.scrollTo(sv.getBottom(), 0);
+
+            Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/customfont.ttf");
+
+            leftDrawerNameText.setTypeface(custom_font);
+           // sv.fullScroll(View.FOCUS_UP);
+            leftDrawerClockTimeText.setText(myCalenderConversion.returnConvertedTime());
+            leftDrawerClockDateText.setText(myCalenderConversion.retunConvertedDate());
             mainHomeView.animate().translationX(slideDrawerView.getWidth());
             slideDrawerView.setVisibility(View.VISIBLE);
             slideDrawerView.setAlpha(0.0f);
             slideDrawerView.animate().translationX(widthPixels).alpha(1.0f);
+            isAppTrayVisible = true;
         }else{
             mainHomeView.animate().translationX(0);
             slideDrawerView.animate().translationX(-slideDrawerView.getWidth()).alpha(0.0f).setListener(new AnimatorListenerAdapter() {
@@ -312,6 +416,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                     slideDrawerView.setVisibility(View.VISIBLE);
                 }
             });
+            isAppTrayVisible = false;
         }
     }
 
@@ -380,6 +485,51 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                     });;
             isAppDrawerVisible = true;
         }
+    }
+
+    private void getApplicationListForBottomDrawer(){
+        AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
+        builderSingle.setTitle("Select Application");
+
+        final ArrayAdapter<String> arrayAdapter = new ArrayAdapter<String>(
+                this,
+                android.R.layout.select_dialog_singlechoice);
+        for(int i=0;i<packages.size;i++){
+            arrayAdapter.add(""+packages.getAppLabel(i));
+        }
+
+        builderSingle.setNegativeButton(
+                "cancel",
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                    }
+                });
+        builderSingle.setAdapter(
+                arrayAdapter,
+                new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        String strName = arrayAdapter.getItem(which);
+                        AlertDialog.Builder builderInner = new AlertDialog.Builder(AppDrawerActivity.this);
+                        builderInner.setMessage(strName);
+                        builderInner.setTitle("Your Selected App is");
+                        builderInner.setPositiveButton(
+                                "Ok",
+                                new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(
+                                            DialogInterface dialog,
+                                            int which) {
+                                        dialog.dismiss();
+                                    }
+                                });
+                        builderInner.show();
+                    }
+                });
+
+        builderSingle.show();
     }
 
     private void changeBrightness(int bVal){

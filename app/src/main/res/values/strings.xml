@@ -4,4 +4,5 @@
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="title_activity_preference_screen">PreferenceScreen</string>
+    <string name="title_activity_app_chooser_application">AppChooserApplication</string>
 </resources>

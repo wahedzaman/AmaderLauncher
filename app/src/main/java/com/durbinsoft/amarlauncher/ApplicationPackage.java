@@ -14,12 +14,14 @@ import android.graphics.drawable.Drawable;
 
 public class ApplicationPackage {
 
-    Drawable[] icon;
-    String[] packageName;
-    String[] appLabel;
-    int size;
+    static Drawable[] icon;
+    static String[] packageName;
+    static String[] appLabel;
+    static int size;
 
     PackageManager packageManager;
+
+    public ApplicationPackage(){}
 
     public ApplicationPackage(Context c) {
         packageManager = c.getPackageManager();
