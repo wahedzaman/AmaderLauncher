@@ -69,7 +69,12 @@ public class AppChooserApplication extends ListActivity {
                 }
 
                 if(appCount == 4){
-                    sPrefs.setApps(selectedApps[0],selectedApps[1],selectedApps[2],selectedApps[3]);
+                    String[] packageName = new String[4];
+                    packageName[0] = aPackage.getPackageName(selectedApps[0]);
+                    packageName[1] = aPackage.getPackageName(selectedApps[1]);
+                    packageName[2] = aPackage.getPackageName(selectedApps[2]);
+                    packageName[3] = aPackage.getPackageName(selectedApps[3]);
+                    sPrefs.setApps(packageName[0],packageName[1],packageName[2],packageName[3]);
                     sPrefs.setBool(false);
                     finish();
                 }

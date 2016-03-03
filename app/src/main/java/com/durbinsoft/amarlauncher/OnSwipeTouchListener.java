@@ -29,9 +29,16 @@ public class OnSwipeTouchListener implements OnTouchListener {
         private static final int SWIPE_THRESHOLD = 100;
         private static final int SWIPE_VELOCITY_THRESHOLD = 100;
 
+
         @Override
         public boolean onDown(MotionEvent e) {
             return true;
+        }
+
+        @Override
+        public void onLongPress(MotionEvent e) {
+            onLongPressDown();
+            super.onLongPress(e);
         }
 
         @Override
@@ -85,5 +92,8 @@ public class OnSwipeTouchListener implements OnTouchListener {
     }
 
     public void onSingleTap(){
+    }
+
+    public void onLongPressDown(){
     }
 }

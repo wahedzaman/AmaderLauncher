@@ -14,7 +14,7 @@ import java.util.Locale;
 public class CalenderConversion {
 
     private String [] days_in_bangla = {"শনিবার","রবিবার", "সোমবার","মঙ্গলবার", "বুধবার", "বৃহস্পতিবার","শুক্রবার"};
-    private String [] days_in_english = {"sat","sun","mon","tue","wed","thu"};
+    private String [] days_in_english = {"sat","sun","mon","tue","wed","thu","fri"};
 
     private String [] bangla_nmber = {"০","১","২","৩","৪","৫","৬","৭","৮","৯"};
 
@@ -40,6 +40,7 @@ public class CalenderConversion {
 
     private void returnConvertedCal(){
         checkCurrentTimeStatus();
+        formatTime12();
 
         timeConverted = convertNumberToBangla(rawTimeData.substring(0,5));
         dateConverted = convertNumberToBangla(rawDateData);
@@ -157,7 +158,20 @@ public class CalenderConversion {
     }
 
     private void formatTime12(){
-
+        String timeParsed = rawTimeData.substring(0,5);
+        int timeInHour = Integer.parseInt(rawTimeData.substring(0,2));
+        if(timeInHour == 00){
+            timeParsed = "12";
+        }else if(timeInHour>12){
+            timeInHour = timeInHour-12;
+            if(10-timeInHour>0){
+                timeParsed = "0"+ timeInHour;
+            }else{
+                timeParsed = ""+ timeInHour;
+            }
+        }
+        String tempVal = timeParsed + rawTimeData.substring(2);
+        rawTimeData = tempVal;
     }
 
     private void checkCurrentTimeStatus(){

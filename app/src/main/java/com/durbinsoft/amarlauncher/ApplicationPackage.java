@@ -73,6 +73,16 @@ public class ApplicationPackage {
         }
     }
 
+    public int searchAndReturnPackage(String iPackageName){
+        int packageIndexNumber =-1;
+        for(int i=0;i<size;i++){
+            if(packageName[i].equals(iPackageName)){
+                packageIndexNumber = i;
+            }
+        }
+        return packageIndexNumber;
+    }
+
     public Drawable[] getIcons() {
         return icon;
     }
@@ -90,7 +100,13 @@ public class ApplicationPackage {
     }
 
     public Drawable getIcon(int i) {
-        return icon[i];
+        Drawable ico;
+        if(i==-1){
+            ico = getIcon(searchAndReturnPackage("com.durbinsoft.amarlauncher"));
+        }else{
+            ico = icon[i];
+        }
+        return ico;
     }
 
     public String getPackageName(int i) {

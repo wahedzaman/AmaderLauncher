@@ -79,6 +79,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private CalendarView calendar;
     private PreferenceClassForData sPrefs;
 
+    private String selectedAppPackageName = "";
+
     private Camera camera;
     Camera.Parameters params;
 
@@ -140,6 +142,17 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         appDrawerBuuton2 = (ImageButton) findViewById(R.id.appDrawerButton2);
         appDrawerBuuton3 = (ImageButton) findViewById(R.id.appDrawerButton3);
         appDrawerBuuton4 = (ImageButton) findViewById(R.id.appDrawerButton4);
+
+        bottomDrawerbutton1 = (ImageButton)findViewById(R.id.bottomDrawerApp1);
+        bottomDrawerbutton2 = (ImageButton)findViewById(R.id.bottomDrawerApp2);
+        bottomDrawerbutton3 = (ImageButton)findViewById(R.id.bottomDrawerApp3);
+        bottomDrawerbutton4 = (ImageButton)findViewById(R.id.bottomDrawerApp4);
+        bottomDrawerbutton5 = (ImageButton)findViewById(R.id.bottomDrawerApp5);
+        bottomDrawerbutton6 = (ImageButton)findViewById(R.id.bottomDrawerApp6);
+        bottomDrawerbutton7 = (ImageButton)findViewById(R.id.bottomDrawerApp7);
+        bottomDrawerbutton8 = (ImageButton)findViewById(R.id.bottomDrawerApp8);
+        bottomDrawerbutton9 = (ImageButton)findViewById(R.id.bottomDrawerApp9);
+        bottomDrawerbutton10 = (ImageButton)findViewById(R.id.bottomDrawerApp10);
 
         brightnessBar = (SeekBar) findViewById(R.id.bottomDrawerAppBrightnessSlider);
 
@@ -220,7 +233,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSwipeLeft() {
-                getSliderDrawerInView();
+                if(isAppTrayVisible){
+                    getSliderDrawerInView();
+                }
             }
 
             public void onSwipeBottom() {
@@ -257,14 +272,19 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
 
         // appDrawer application click and swipe handler
+        //add a on/off check from prefs and check whether configured or not,if not configured than open app chooser,.....
         appDrawerBuuton1.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onSwipeTop() {
                 cameraClicked();
             }
 
             public void onSingleTap() {
-                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(packages.getPackageName(sPrefs.getSelectedApp(1)));
-                startActivity(launchIntent);;
+                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(1));
+                startActivity(launchIntent);
+            }
+
+            public void onLongPressDown(){
+                getApplicationListForBottomDrawer(appDrawerBuuton1, sPrefs.SP_APP1);
             }
 
         });
@@ -273,9 +293,13 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 webClicked();
             }
 
+            public void onLongPressDown(){
+                getApplicationListForBottomDrawer(appDrawerBuuton2, sPrefs.SP_APP2);
+            }
+
 
             public void onSingleTap() {
-                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(packages.getPackageName(sPrefs.getSelectedApp(2)));
+                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(2));
                 startActivity(launchIntent);
             }
 
@@ -285,9 +309,13 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 dialerClicked();
             }
 
+            public void onLongPressDown(){
+                getApplicationListForBottomDrawer(appDrawerBuuton3, sPrefs.SP_APP3);
+            }
+
 
             public void onSingleTap() {
-                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(packages.getPackageName(sPrefs.getSelectedApp(3)));
+                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(3));
                 startActivity(launchIntent);
             }
 
@@ -297,8 +325,127 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 messageClicked();
             }
 
+            public void onLongPressDown(){
+                getApplicationListForBottomDrawer(appDrawerBuuton4, sPrefs.SP_APP4);
+            }
+
             public void onSingleTap() {
-                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(packages.getPackageName(sPrefs.getSelectedApp(4)));
+                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(4));
+                startActivity(launchIntent);
+            }
+
+        });
+
+
+        //bottom drawer favourite app click listener
+        //add a check if it is initialize or not.
+
+        bottomDrawerbutton1.setOnTouchListener(new OnSwipeTouchListener(this) {
+           public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton1, sPrefs.SP_APP5);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(5));
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton2.setOnTouchListener(new OnSwipeTouchListener(this) {
+           public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton2, sPrefs.SP_APP6);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(6));
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton3.setOnTouchListener(new OnSwipeTouchListener(this) {
+           public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton3, sPrefs.SP_APP7);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(7));
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton4.setOnTouchListener(new OnSwipeTouchListener(this) {
+           public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton4, sPrefs.SP_APP8);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(8));
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton5.setOnTouchListener(new OnSwipeTouchListener(this) {
+           public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton5, sPrefs.SP_APP9);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(9));
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton6.setOnTouchListener(new OnSwipeTouchListener(this) {
+           public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton6, sPrefs.SP_APP10);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(10));
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton7.setOnTouchListener(new OnSwipeTouchListener(this) {
+           public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton7, sPrefs.SP_APP11);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(11));
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton8.setOnTouchListener(new OnSwipeTouchListener(this) {
+           public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton8, sPrefs.SP_APP12);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(12));
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton9.setOnTouchListener(new OnSwipeTouchListener(this) {
+           public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton9, sPrefs.SP_APP13);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(13));
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton10.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onLongPressDown() {
+                getApplicationListForBottomDrawer(bottomDrawerbutton10, sPrefs.SP_APP14);
+            }
+
+            public void onSingleTap() {
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(14));
                 startActivity(launchIntent);
             }
 
@@ -331,16 +478,62 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
     }
 
+    private void setChangedApplicationToButton(ImageButton imageButton, String packageName, String appPositionName){ // stage reffers to the button of favourite button or appbar button. 0 or 1
+        //update sharedpreferences, update icon, update packageName link
+        imageButton.setImageDrawable(packages.getIcon(packages.searchAndReturnPackage(packageName)));
+        sPrefs.setApps(packageName,appPositionName);
+    }
+
     private void setBottomDrawerApps(){
-        int [] items = new int[4] ;
+        String [] items = new String[14];
+        int [] itemsIcon = new int[14];
+
         items[0] = sPrefs.getSelectedApp(1);
         items[1] = sPrefs.getSelectedApp(2);
         items[2] = sPrefs.getSelectedApp(3);
         items[3] = sPrefs.getSelectedApp(4);
-        appDrawerBuuton1.setImageDrawable(packages.getIcon(items[0]));
-        appDrawerBuuton2.setImageDrawable(packages.getIcon(items[1]));
-        appDrawerBuuton3.setImageDrawable(packages.getIcon(items[2]));
-        appDrawerBuuton4.setImageDrawable(packages.getIcon(items[3]));
+        items[4] = sPrefs.getSelectedApp(5);
+        items[5] = sPrefs.getSelectedApp(6);
+        items[6] = sPrefs.getSelectedApp(7);
+        items[7] = sPrefs.getSelectedApp(8);
+        items[8] = sPrefs.getSelectedApp(9);
+        items[9] = sPrefs.getSelectedApp(10);
+        items[10] = sPrefs.getSelectedApp(11);
+        items[11] = sPrefs.getSelectedApp(12);
+        items[12] = sPrefs.getSelectedApp(13);
+        items[13] = sPrefs.getSelectedApp(14);
+
+        itemsIcon[0] = packages.searchAndReturnPackage(items[0]);
+        itemsIcon[1] = packages.searchAndReturnPackage(items[1]);
+        itemsIcon[2] = packages.searchAndReturnPackage(items[2]);
+        itemsIcon[3] = packages.searchAndReturnPackage(items[3]);
+
+        itemsIcon[4] = packages.searchAndReturnPackage(items[4]);
+        itemsIcon[5] = packages.searchAndReturnPackage(items[5]);
+        itemsIcon[6] = packages.searchAndReturnPackage(items[6]);
+        itemsIcon[7] = packages.searchAndReturnPackage(items[7]);
+        itemsIcon[8] = packages.searchAndReturnPackage(items[8]);
+        itemsIcon[9] = packages.searchAndReturnPackage(items[9]);
+        itemsIcon[10] = packages.searchAndReturnPackage(items[10]);
+        itemsIcon[11] = packages.searchAndReturnPackage(items[11]);
+        itemsIcon[12] = packages.searchAndReturnPackage(items[12]);
+        itemsIcon[13] = packages.searchAndReturnPackage(items[13]);
+
+        appDrawerBuuton1.setImageDrawable(packages.getIcon(itemsIcon[0]));
+        appDrawerBuuton2.setImageDrawable(packages.getIcon(itemsIcon[1]));
+        appDrawerBuuton3.setImageDrawable(packages.getIcon(itemsIcon[2]));
+        appDrawerBuuton4.setImageDrawable(packages.getIcon(itemsIcon[3]));
+
+        bottomDrawerbutton1.setImageDrawable(packages.getIcon(itemsIcon[4]));
+        bottomDrawerbutton2.setImageDrawable(packages.getIcon(itemsIcon[5]));
+        bottomDrawerbutton3.setImageDrawable(packages.getIcon(itemsIcon[6]));
+        bottomDrawerbutton4.setImageDrawable(packages.getIcon(itemsIcon[7]));
+        bottomDrawerbutton5.setImageDrawable(packages.getIcon(itemsIcon[8]));
+        bottomDrawerbutton6.setImageDrawable(packages.getIcon(itemsIcon[9]));
+        bottomDrawerbutton7.setImageDrawable(packages.getIcon(itemsIcon[10]));
+        bottomDrawerbutton8.setImageDrawable(packages.getIcon(itemsIcon[11]));
+        bottomDrawerbutton9.setImageDrawable(packages.getIcon(itemsIcon[12]));
+        bottomDrawerbutton10.setImageDrawable(packages.getIcon(itemsIcon[13]));
     }
 
     public void dialerClicked(){
@@ -369,14 +562,14 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     @Override
     public void onBackPressed() {
        // super.onBackPressed();
-        if(isAppDrawerVisible){
-            homeClicked();
+        if(isBottomDrawerVisible){
+            getBottomDrawerInView();
         }
          else if(isAppTrayVisible){
             getSliderDrawerInView();
         }
-         else if(isBottomDrawerVisible){
-            getBottomDrawerInView();
+         else if(isAppDrawerVisible){
+            homeClicked();
         }
     }
 
@@ -391,8 +584,10 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     }
 
     private void getSliderDrawerInView(){
+
         // direction true == in and false == out
         if(!isAppTrayVisible){
+
             ScrollView sv = (ScrollView)findViewById(R.id.scrl);
             sv.scrollTo(sv.getBottom(), 0);
 
@@ -487,7 +682,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    private void getApplicationListForBottomDrawer(){
+    private void getApplicationListForBottomDrawer(final ImageButton appDrawerBuuton, final String SP_APP){
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
         builderSingle.setTitle("Select Application");
 
@@ -512,6 +707,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                     @Override
                     public void onClick(DialogInterface dialog, int which) {
                         String strName = arrayAdapter.getItem(which);
+                        selectedAppPackageName = packages.getPackageName(which);
+                        setChangedApplicationToButton(appDrawerBuuton, selectedAppPackageName, SP_APP);
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(AppDrawerActivity.this);
                         builderInner.setMessage(strName);
                         builderInner.setTitle("Your Selected App is");
