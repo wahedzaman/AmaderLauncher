@@ -2,6 +2,7 @@ package com.durbinsoft.amarlauncher;
 
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.widget.Toast;
 
 /**
  * Created by Md.Wahuduzzaman on 3/3/2016.
@@ -9,6 +10,9 @@ import android.content.SharedPreferences;
 public class PreferenceClassForData {
 
     private static boolean initialSetup;
+
+    private static int hiddenAppsNumber;
+
     private static String app1;
     private static String app2;
     private static String app3;
@@ -23,6 +27,18 @@ public class PreferenceClassForData {
     private static String app12;
     private static String app13;
     private static String app14;
+
+    private static String Happ1;
+    private static String Happ2;
+    private static String Happ3;
+    private static String Happ4;
+    private static String Happ5;
+    private static String Happ6;
+    private static String Happ7;
+    private static String Happ8;
+    private static String Happ9;
+    private static String Happ10;
+
 
     static SharedPreferences sp;
     Context mContext;
@@ -46,6 +62,19 @@ public class PreferenceClassForData {
     public String SP_APP13 = "AMAR_LAUNCHER_APP13";
     public String SP_APP14 = "AMAR_LAUNCHER_APP14";
 
+    public String SP_HAPP1 = "AMAR_LAUNCHER_HAPP1";
+    public String SP_HAPP2 = "AMAR_LAUNCHER_HAPP2";
+    public String SP_HAPP3 = "AMAR_LAUNCHER_HAPP3";
+    public String SP_HAPP4 = "AMAR_LAUNCHER_HAPP4";
+    public String SP_HAPP5 = "AMAR_LAUNCHER_HAPP5";
+    public String SP_HAPP6 = "AMAR_LAUNCHER_HAPP6";
+    public String SP_HAPP7 = "AMAR_LAUNCHER_HAPP7";
+    public String SP_HAPP8 = "AMAR_LAUNCHER_HAPP8";
+    public String SP_HAPP9 = "AMAR_LAUNCHER_HAPP9";
+    public String SP_HAPP10 = "AMAR_LAUNCHER_HAPP10";
+
+    public String SP_HAPPNumber = "AMAR_LAUNCHER_HAPPNUMBER";
+
     PreferenceClassForData(Context mContext){
         this.mContext = mContext;
         sp = mContext.getSharedPreferences(SP_NAME,mContext.MODE_PRIVATE);
@@ -53,9 +82,11 @@ public class PreferenceClassForData {
 
 
     public void initializeSharedPrefs(){
-        sp = mContext.getSharedPreferences(SP_NAME,mContext.MODE_PRIVATE);
+        sp = mContext.getSharedPreferences(SP_NAME, mContext.MODE_PRIVATE);
 
         initialSetup = sp.getBoolean(SP_INITIATED, true);
+        hiddenAppsNumber = sp.getInt(SP_HAPPNumber, 0);
+
         app1 = sp.getString(SP_APP1, "com.durbinsoft.amarlauncher");
         app2 = sp.getString(SP_APP2, "com.durbinsoft.amarlauncher");
         app3 = sp.getString(SP_APP3, "com.durbinsoft.amarlauncher");
@@ -70,8 +101,22 @@ public class PreferenceClassForData {
         app12 = sp.getString(SP_APP12, "com.durbinsoft.amarlauncher");
         app13 = sp.getString(SP_APP13, "com.durbinsoft.amarlauncher");
         app14 = sp.getString(SP_APP14, "com.durbinsoft.amarlauncher");
-    }
 
+        if(hiddenAppsNumber>0){
+            Happ1 = sp.getString(SP_HAPP1, "com.durbinsoft.amarlauncher");
+            Happ2 = sp.getString(SP_HAPP2, "com.durbinsoft.amarlauncher");
+            Happ3 = sp.getString(SP_HAPP3, "com.durbinsoft.amarlauncher");
+            Happ4 = sp.getString(SP_HAPP4, "com.durbinsoft.amarlauncher");
+            Happ5 = sp.getString(SP_HAPP5, "com.durbinsoft.amarlauncher");
+            Happ6 = sp.getString(SP_HAPP6, "com.durbinsoft.amarlauncher");
+            Happ7 = sp.getString(SP_HAPP7, "com.durbinsoft.amarlauncher");
+            Happ8 = sp.getString(SP_HAPP8, "com.durbinsoft.amarlauncher");
+            Happ9 = sp.getString(SP_HAPP9, "com.durbinsoft.amarlauncher");
+            Happ10 = sp.getString(SP_HAPP10, "com.durbinsoft.amarlauncher");
+
+        }
+
+    }
     public String getSelectedApp(int x){
         initializeSharedPrefs();
         String  val = "nu";
@@ -122,16 +167,90 @@ public class PreferenceClassForData {
         return  val;
     }
 
+    public String getHiddenApp(int x){
+        initializeSharedPrefs();
+        String  val = "nu";
+        switch (x){
+            case 1:
+                val =Happ1;
+                break;
+            case 2:
+                val = Happ2;
+                break;
+            case 3:
+                val = Happ3;
+                break;
+            case 4:
+                val = Happ4;
+                break;
+            case 5:
+                val = Happ5;
+                break;
+            case 6:
+                val = Happ6;
+                break;
+            case 7:
+                val = Happ7;
+                break;
+            case 8:
+                val = Happ8;
+                break;
+            case 9:
+                val = Happ9;
+                break;
+            case 10:
+                val = Happ10;
+                break;
+        }
+        return  val;
+    }
+
+    public void setHiddenApps(String mPackName){
+        spHeader();
+        hiddenAppsNumber++;
+        switch (hiddenAppsNumber){
+            case 1:
+                editor.putString(SP_HAPP1,mPackName);
+                break;
+            case 2:
+                editor.putString(SP_HAPP2,mPackName);
+                break;
+            case 3:
+                editor.putString(SP_HAPP3,mPackName);
+                break;
+            case 4:
+                editor.putString(SP_HAPP4,mPackName);
+                break;
+            case 5:
+                editor.putString(SP_HAPP5,mPackName);
+                break;
+            case 6:
+                editor.putString(SP_HAPP6,mPackName);
+                break;
+            case 7:
+                editor.putString(SP_HAPP7,mPackName);
+                break;
+            case 8:
+                editor.putString(SP_HAPP8,mPackName);
+                break;
+            case 9:
+                editor.putString(SP_HAPP9,mPackName);
+                break;
+            case 10:
+                editor.putString(SP_HAPP10,mPackName);
+                break;
+
+        }
+        editor.putInt(SP_HAPPNumber,hiddenAppsNumber);
+        spFooter();
+    }
+
     public boolean getBool(){
         return initialSetup;
     }
 
-    private void spHeader(){
-        sp = mContext.getSharedPreferences(SP_NAME,mContext.MODE_PRIVATE);
-        editor = sp.edit();
-    }
-    private void spFooter(){
-        editor.commit();
+    public int getHiddenAppsNumber(){
+        return hiddenAppsNumber;
     }
 
     public void setBool(boolean val){
@@ -153,6 +272,15 @@ public class PreferenceClassForData {
         editor.putString(SP_APP3, ap3);
         editor.putString(SP_APP4, ap4);
         spFooter();
+    }
+
+
+    private void spHeader(){
+        sp = mContext.getSharedPreferences(SP_NAME,mContext.MODE_PRIVATE);
+        editor = sp.edit();
+    }
+    private void spFooter(){
+        editor.commit();
     }
 
 }

@@ -8,7 +8,7 @@
         android:id="@+id/slideDrawer"
         android:layout_width="320dp"
         android:layout_height="match_parent"
-        android:background="#303030"
+        android:background="#817f82"
         android:orientation="vertical">
 
         <LinearLayout

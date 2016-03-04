@@ -4,13 +4,18 @@ package com.durbinsoft.amarlauncher;
  * Created by Md.Wahuduzzaman on 2/22/2016.
  */
 
+import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.util.Log;
 import android.widget.ImageButton;
 
 public class ApplicationPackage {
@@ -19,6 +24,17 @@ public class ApplicationPackage {
     static String[] packageName;
     static String[] appLabel;
     static int size;
+
+    static ArrayList<String> hiddenAppPackageName = new ArrayList<String>();
+    static int hiddenSize=0;
+
+    static Drawable[] deliverableIcon;
+    static String[] deliverablePackageName;
+    static String[] deliverableAppLabel;
+    static int deliverableSize;
+
+    static boolean isAppHidden = false;
+
     private Context mContext;
 
     PackageManager packageManager;
@@ -49,6 +65,7 @@ public class ApplicationPackage {
         }
 
         sortApps();
+        resortForHiddenApps();
     }
 
     private void sortApps() {
@@ -78,12 +95,64 @@ public class ApplicationPackage {
 
     public int searchAndReturnPackage(String iPackageName){
         int packageIndexNumber =-1;
-        for(int i=0;i<size;i++){
-            if(packageName[i].equals(iPackageName)){
-                packageIndexNumber = i;
+        for(int i=0;i<deliverableSize;i++){
+            if(deliverablePackageName.length>0){
+                if(iPackageName.equals("com.durbinsoft.amarlauncher")){
+                    packageIndexNumber =-1;
+                }
+                else if(deliverablePackageName[i].equals(iPackageName)){
+                    packageIndexNumber = i;
+                }
             }
+
         }
         return packageIndexNumber;
+    }
+    public void resortForHiddenApps(){
+        if(hiddenSize>0){
+            deliverableSize = size-hiddenSize;
+            deliverableAppLabel = new String[deliverableSize];
+            deliverablePackageName = new String[deliverableSize];
+            deliverableIcon = new Drawable[deliverableSize];
+            int j;
+            int i =0;
+            int m =0;
+            int k;
+
+            boolean matched = false;
+
+            for(j =m; j<size;j++,m++){
+                for(k = 0; k<hiddenSize;k++){
+                    if(packageName[j].equals(hiddenAppPackageName.get(k))){
+                        matched = true;
+                        break;
+                    }
+                }
+                if(matched) {
+                    matched = false;
+                }
+                else if((matched==false)&&(k==hiddenSize)){
+
+                    deliverablePackageName[i] =packageName[j];
+                    deliverableAppLabel[i] =appLabel[j];
+                    deliverableIcon[i] =icon[j];
+                    i++;
+                }
+            }
+
+
+        }else{
+            deliverableSize = size;
+            deliverableAppLabel = new String[deliverableSize];
+            deliverablePackageName = new String[deliverableSize];
+            deliverableIcon = new Drawable[deliverableSize];
+
+            for(int i=0;i<size;i++){
+                deliverableAppLabel[i] = appLabel[i];
+                deliverablePackageName[i] = packageName[i];
+                deliverableIcon[i] = icon[i];
+            }
+        }
     }
 
     public Drawable[] getIcons() {
@@ -105,19 +174,32 @@ public class ApplicationPackage {
     public Drawable getIcon(int i) {
         Drawable ico;
         if(i==-1){
-            ico = mContext.getResources().getDrawable(R.drawable.defaultaddicon);
-            //ico = getIcon(searchAndReturnPackage("com.durbinsoft.amarlauncher"));
+            //ico = mContext.getResources().getDrawable(R.drawable.blueblurbg);
+            //  d.setAlpha(200);
+            //  bottomDrawerView.setBackground(d);
+
+              Bitmap tmpImg = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.defaultaddicon);
+            ico = new BitmapDrawable(mContext.getResources(),tmpImg);
+            //   BitmapDrawable draw = new BitmapDrawable(Bitmap.createScaledBitmap(tmpImg, 16, 16, false));
+            //   airplaneToggleButton.setBackground(draw);
         }else{
-            ico = icon[i];
+            ico = deliverableIcon[i];
         }
         return ico;
     }
 
     public String getPackageName(int i) {
-        return packageName[i];
+        return deliverablePackageName[i];
     }
 
     public String getAppLabel(int i) {
-        return appLabel[i];
+        return deliverableAppLabel[i];
+    }
+
+
+
+    public void setHiddenAppPackageName(String hidPackName){
+        hiddenSize ++;
+        hiddenAppPackageName.add(hidPackName);
     }
 }

@@ -16,10 +16,24 @@ public class CustomApplicationDrawerAdapter extends BaseAdapter{
 
     private Context myContext;
     private ApplicationPackage applicationPackage;
+    private PreferenceClassForData sPrefs;
 
     public CustomApplicationDrawerAdapter(Context c, ApplicationPackage ap) {
         myContext = c;
         applicationPackage = ap;
+        sPrefs = new PreferenceClassForData(myContext);
+        sPrefs.initializeSharedPrefs();
+
+        initiatePackage();
+    }
+
+    private void initiatePackage(){
+        if(sPrefs.getHiddenAppsNumber()>0){
+            for(int i=0;i<sPrefs.getHiddenAppsNumber();i++){
+                applicationPackage.setHiddenAppPackageName(sPrefs.getHiddenApp(i+1));
+            }
+            applicationPackage.initializePackages();
+        }
     }
 
     @Override

@@ -18,6 +18,7 @@ import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
+import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -50,14 +51,16 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     ApplicationPackage packages;
     CustomApplicationDrawerAdapter customDrawerAdapter;
+    AppDrawerClickListener appDrawerClickListener;
 
     GridView appDrawerView;
-    LinearLayout appTrayView, slideDrawerView, mainHomeView, bottomDrawerView;
+    LinearLayout appTrayView, slideDrawerView, mainHomeView, bottomDrawerView, appdrawerLongpressDetails;
     ImageButton appDrawerHomeButton, appDrawerBuuton1,appDrawerBuuton2,appDrawerBuuton3,appDrawerBuuton4,bottomDrawerbutton1,bottomDrawerbutton2,bottomDrawerbutton3,bottomDrawerbutton4,bottomDrawerbutton5,bottomDrawerbutton6,bottomDrawerbutton7,bottomDrawerbutton8,bottomDrawerbutton9,bottomDrawerbutton10;
 
     private boolean isAppDrawerVisible = false;
     private boolean isAppTrayVisible = false;
     private boolean isBottomDrawerVisible = false;
+    private boolean isAppDrawerLongpressDetailsVisible = false;
 
     DisplayMetrics dmetrics = new DisplayMetrics();
 
@@ -75,6 +78,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private ImageView airplaneToggle,wifiToggle,bluetoothToggle,rotationToggle,lightToggle;
 
     private TextView leftDrawerClockTimeText,leftDrawerClockDateText,leftDrawerNameText;
+
+    //these textview below, acts like button
+    private TextView appDeleteTv,appDetailsTv,appHideTv;
 
     private CalendarView calendar;
     private PreferenceClassForData sPrefs;
@@ -98,22 +104,13 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         setContentView(R.layout.app_drawer);
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
 
-        packagemanager = getPackageManager();
-        sPrefs = new PreferenceClassForData(this);
-        sPrefs.initializeSharedPrefs();
-        initialSetup = sPrefs.getBool();
 
 
 
         appTrayFadeInOut = false;
         appTraySlideInOUt = true;
 
-        myCalenderConversion = new CalenderConversion();
 
-        packages = new ApplicationPackage(this);
-        packages.initializePackages();
-
-        customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
 
         initiateView();
         setAllAdapterAndEverything();
@@ -136,6 +133,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         leftDrawerClockDateText = (TextView)findViewById(R.id.leftclockDateTv);
         leftDrawerClockTimeText = (TextView)findViewById(R.id.leftclockTimeTv);
         leftDrawerNameText = (TextView) findViewById(R.id.leftDrawerNameText);
+
+
+        appDeleteTv = (TextView) findViewById(R.id.appUnistalltv);
+       //appDetailsTv = (TextView) findViewById(R.id.appDetailstv);
+       // appHideTv = (TextView) findViewById(R.id.appHidetv);
 
 
         appDrawerBuuton1 = (ImageButton) findViewById(R.id.appDrawerButton1);
@@ -163,6 +165,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         mainHomeView = (LinearLayout) findViewById(R.id.mainHomeView);
         slideDrawerView = (LinearLayout) findViewById(R.id.slideDrawer);
         appTrayView = (LinearLayout) findViewById(R.id.appTrayHolder);
+        appdrawerLongpressDetails = (LinearLayout) findViewById(R.id.appdrawerLongPressDetailsLayout);
         appDrawerView = (GridView) findViewById(R.id.appDrawerGridView);
     }
 
@@ -178,6 +181,18 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     private void setAllAdapterAndEverything(){
 
+        packagemanager = getPackageManager();
+        sPrefs = new PreferenceClassForData(this);
+        sPrefs.initializeSharedPrefs();
+        initialSetup = sPrefs.getBool();
+
+        myCalenderConversion = new CalenderConversion();
+
+        packages = new ApplicationPackage(this);
+        packages.initializePackages();
+
+        customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
+
         airplaneToggle.setOnClickListener(this);
         wifiToggle.setOnClickListener(this);
         bluetoothToggle.setOnClickListener(this);
@@ -188,8 +203,10 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         appDrawerView.setAdapter(customDrawerAdapter);
 
         appDrawerView.setTextFilterEnabled(true);
+        appDrawerClickListener = new AppDrawerClickListener(this, packages,appdrawerLongpressDetails,appDrawerView);
 
         appDrawerView.setOnItemClickListener(new AppDrawerClickListener(this, packages));
+        appDrawerView.setOnItemLongClickListener(appDrawerClickListener);
 
         //Drawable d = getResources().getDrawable(R.drawable.blueblurbg);
         //  d.setAlpha(200);
@@ -217,14 +234,47 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             //do nothing
         }else{
             slideDrawerView.setVisibility(View.INVISIBLE);
+        }if(isAppDrawerLongpressDetailsVisible){
+            //do nothing
+        }else{
+            appdrawerLongpressDetails.setVisibility(View.INVISIBLE);
         }
+
+
+
+        //below code handles appdelete,apphide and appdetails
+        appDeleteTv.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onSingleTap(){
+                Intent intent = new Intent(Intent.ACTION_DELETE, Uri.fromParts("package", appDrawerClickListener.getPressedAppName(), null));
+                startActivity(intent);
+                appDrawerClickListener.resetVisibilityAndOther();
+            }
+
+        });
+        /*
+        appDetailsTv.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onSingleTap() {
+                appDrawerClickListener.resetVisibilityAndOther();
+            }
+
+        });
+        appHideTv.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onSingleTap(){
+                sPrefs.setHiddenApps(appDrawerClickListener.getPressedAppName());
+                appDrawerClickListener.resetVisibilityAndOther();
+                setAllAdapterAndEverything();
+            }
+
+        });
+
+*/
+
 
         //below are the code to handle swipe gestures...
 
         mainHomeView.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onSwipeTop() {
                 checkSystemStatus();
-                getCamera();
                 getBottomDrawerInView();
             }
 
@@ -262,14 +312,17 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         appDrawerHomeButton.setOnTouchListener(new OnSwipeTouchListener(this) {
 
-            public void onSingleTap(){
+            public void onSingleTap() {
                 homeClicked();
             }
+
             public void onSwipeTop() {
                 getBottomDrawerInView();
             }
 
         });
+
+
 
         // appDrawer application click and swipe handler
         //add a on/off check from prefs and check whether configured or not,if not configured than open app chooser,.....
@@ -279,11 +332,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(1));
+                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(1));
                 startActivity(launchIntent);
             }
 
-            public void onLongPressDown(){
+            public void onLongPressDown() {
                 getApplicationListForBottomDrawer(appDrawerBuuton1, sPrefs.SP_APP1);
             }
 
@@ -562,7 +615,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     @Override
     public void onBackPressed() {
        // super.onBackPressed();
-        if(isBottomDrawerVisible){
+        if(appDrawerClickListener.getAppDetailsMenuVisibility()){
+            appDrawerClickListener.getDetailsMenuInView();
+        }else if(isBottomDrawerVisible){
             getBottomDrawerInView();
         }
          else if(isAppTrayVisible){
@@ -709,6 +764,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                         String strName = arrayAdapter.getItem(which);
                         selectedAppPackageName = packages.getPackageName(which);
                         setChangedApplicationToButton(appDrawerBuuton, selectedAppPackageName, SP_APP);
+                        /*
                         AlertDialog.Builder builderInner = new AlertDialog.Builder(AppDrawerActivity.this);
                         builderInner.setMessage(strName);
                         builderInner.setTitle("Your Selected App is");
@@ -723,6 +779,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                                     }
                                 });
                         builderInner.show();
+                        */
                     }
                 });
 
@@ -735,14 +792,12 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 //auto mode
             }
            else {
-                bVal = bVal *2;
                 //any value 0-10 but check, if value is under 10, then always keep it 10
                 if(bVal < 0)
                     bVal = 0;
                 else if(bVal > 255)
                     bVal = 255;
 
-                Log.d("bval", "" + bVal);
                 ContentResolver cResolver = this.getApplicationContext().getContentResolver();
                 Settings.System.putInt(cResolver, Settings.System.SCREEN_BRIGHTNESS, bVal);
             }
@@ -771,6 +826,10 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private void checkSystemStatus(){
         //check wifi state,bluetooth state, rotation state, brightness state and set the value accordingly to the view.
         //call the updateGfx method to update gfx AND BROADCAST LISTERNER FOR ALL THESE SERVICE,, SO THAT ANY CHANGE CAN EFFECT IMMEDIATELY.
+
+        ContentResolver cResolver = this.getApplicationContext().getContentResolver();
+        String x = Settings.System.getString(cResolver, Settings.System.SCREEN_BRIGHTNESS);
+        brightnessBar.setProgress(Integer.parseInt(x));
 
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
         wifiState = wifiManager.isWifiEnabled();
@@ -842,6 +901,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
 
     private void turnOnFlash() {
+        getCamera();
         if (!isFlashOn) {
             if (camera == null || params == null) {
                 return;
