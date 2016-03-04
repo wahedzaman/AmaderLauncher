@@ -36,30 +36,35 @@ android:orientation="vertical">
                 android:layout_height="fill_parent"
                 android:orientation="horizontal">
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/bottomDrawerApp1"/>
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/bottomDrawerApp2"/>
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/bottomDrawerApp3"/>
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/bottomDrawerApp4"/>
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"
@@ -76,30 +81,35 @@ android:orientation="vertical">
                 android:layout_height="fill_parent"
                 android:orientation="horizontal">
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/bottomDrawerApp6"/>
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/bottomDrawerApp7"/>
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/bottomDrawerApp8"/>
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:id="@+id/bottomDrawerApp9"/>
                 <ImageButton
+                    android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
                     android:layout_width="fill_parent"

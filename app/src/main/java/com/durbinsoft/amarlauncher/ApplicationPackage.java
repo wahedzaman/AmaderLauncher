@@ -11,6 +11,7 @@ import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.drawable.Drawable;
+import android.widget.ImageButton;
 
 public class ApplicationPackage {
 
@@ -18,12 +19,14 @@ public class ApplicationPackage {
     static String[] packageName;
     static String[] appLabel;
     static int size;
+    private Context mContext;
 
     PackageManager packageManager;
 
     public ApplicationPackage(){}
 
     public ApplicationPackage(Context c) {
+        mContext = c;
         packageManager = c.getPackageManager();
     }
 
@@ -102,7 +105,8 @@ public class ApplicationPackage {
     public Drawable getIcon(int i) {
         Drawable ico;
         if(i==-1){
-            ico = getIcon(searchAndReturnPackage("com.durbinsoft.amarlauncher"));
+            ico = mContext.getResources().getDrawable(R.drawable.defaultaddicon);
+            //ico = getIcon(searchAndReturnPackage("com.durbinsoft.amarlauncher"));
         }else{
             ico = icon[i];
         }
