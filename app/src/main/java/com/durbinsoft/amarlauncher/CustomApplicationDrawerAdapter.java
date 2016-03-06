@@ -14,8 +14,11 @@ import android.widget.TextView;
 
 public class CustomApplicationDrawerAdapter extends BaseAdapter{
 
-    private Context myContext;
-    private ApplicationPackage applicationPackage;
+    public static boolean isGoogleApp = false;
+    public static boolean isNewApp = false;
+
+    private static Context myContext;
+    private static ApplicationPackage applicationPackage;
     private PreferenceClassForData sPrefs;
 
     public CustomApplicationDrawerAdapter(Context c, ApplicationPackage ap) {
@@ -24,8 +27,10 @@ public class CustomApplicationDrawerAdapter extends BaseAdapter{
         sPrefs = new PreferenceClassForData(myContext);
         sPrefs.initializeSharedPrefs();
 
-        initiatePackage();
+      //  initiatePackage();
     }
+
+    public CustomApplicationDrawerAdapter(){}
 
     private void initiatePackage(){
         if(sPrefs.getHiddenAppsNumber()>0){
@@ -76,11 +81,36 @@ public class CustomApplicationDrawerAdapter extends BaseAdapter{
             viewHolder = (ViewHolder) convertedView.getTag();
         }
 
-        viewHolder.text.setText(applicationPackage.getAppLabel(position));
-        viewHolder.icon.setImageDrawable(applicationPackage.getIcon(position));
+        if(isGoogleApp){
+            viewHolder.text.setText(applicationPackage.getGoogleAppLabel(position));
+            viewHolder.icon.setImageDrawable(applicationPackage.getGoogleIcon(position));
+        }else if(isNewApp){
+            viewHolder.text.setText(applicationPackage.getGoogleAppLabel(position));
+            viewHolder.icon.setImageDrawable(applicationPackage.getGoogleIcon(position));
+        }else{
+            viewHolder.text.setText(applicationPackage.getNewAppLabel(position));
+            viewHolder.icon.setImageDrawable(applicationPackage.getIcon(position));
+        }
 
+        isGoogleApp = false;
+        isNewApp = false;
 
         return convertedView;
+    }
+
+    public boolean getGoogleAppStatus(){
+        return isGoogleApp;
+    }
+    public boolean getNewAppStatus(){
+        return isNewApp;
+    }
+
+    public void setGoogleAppStatus(boolean x){
+        isGoogleApp = x;
+    }
+
+    public void setNewAppStatus(boolean x){
+        isNewApp = x;
     }
 
 }

@@ -20,6 +20,8 @@ import android.widget.ImageButton;
 
 public class ApplicationPackage {
 
+    ///// EVERY NEW APP SHOULD RESET AFTER THREE TIMES PRESSED.. SET A STATIC COUNTER AND COUNT UNTIL THREE....
+
     static Drawable[] icon;
     static String[] packageName;
     static String[] appLabel;
@@ -32,6 +34,18 @@ public class ApplicationPackage {
     static String[] deliverablePackageName;
     static String[] deliverableAppLabel;
     static int deliverableSize;
+
+    static Drawable[] googleIcon;
+    static String[] googlePackageName;
+    static String[] googleAppLabel;
+    static int googleAppSize;
+
+    static Drawable[] newIcon;
+    static String[] newPackageName;
+    static String[] newAppLabel;
+    static int newAppSize;
+
+    final String[] gAppsPacks = {"com.google.android.apps.authenticator2","com.google.android.apps.blogger","com.google.android.calendar","com.android.chrome","com.google.android.apps.adm","com.google.android.apps.docs.editors.docs","com.google.android.apps.docs","com.google.android.gm","com.google.android.googlequicksearchbox","com.google.android.launcher","com.google.android.apps.pdfviewer","com.google.android.play.games","com.google.android.apps.magazines","com.android.vending","com.google.android.talk","com.google.android.keep","com.google.android.apps.maps","com.google.android.apps.messaging","com.google.android.apps.genie.geniewidget","com.google.chromeremotedesktop","com.google.android.apps.docs.editors.slides","com.niksoftware.snapseed","com.google.android.street","com.google.android.youtube"};
 
     static boolean isAppHidden = false;
 
@@ -66,6 +80,7 @@ public class ApplicationPackage {
 
         sortApps();
         resortForHiddenApps();
+        initiateGooglePacks();
     }
 
     private void sortApps() {
@@ -90,6 +105,28 @@ public class ApplicationPackage {
 
                 }
             }
+        }
+    }
+
+    private void initiateGooglePacks(){
+        ArrayList<String> pac  = new ArrayList<String>();
+        for(int i =0; i<deliverableSize;i++){
+           for (int j=0; j<gAppsPacks.length; j++){
+               if(gAppsPacks[j].equals(deliverablePackageName[i])){
+                    pac.add(gAppsPacks[j]);
+                   break;
+               }
+           }
+        }
+        googleAppSize = pac.size();
+        googlePackageName = new String[googleAppSize];
+        googleAppLabel = new String[googleAppSize];
+        googleIcon = new Drawable[googleAppSize];
+
+        for(int i=0;i<googleAppSize;i++){
+            googlePackageName[i] = pac.get(i);
+            googleAppLabel[i] = getAppLabel(searchAndReturnPackage(pac.get(i)));
+            googleIcon[i] = getIcon(searchAndReturnPackage(pac.get(i)));
         }
     }
 
@@ -197,9 +234,66 @@ public class ApplicationPackage {
     }
 
 
+    public Drawable getGoogleIcon(int i) {
+        Drawable ico;
+        if(i==-1){
+            //ico = mContext.getResources().getDrawable(R.drawable.blueblurbg);
+            //  d.setAlpha(200);
+            //  bottomDrawerView.setBackground(d);
+
+              Bitmap tmpImg = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.defaultaddicon);
+            ico = new BitmapDrawable(mContext.getResources(),tmpImg);
+            //   BitmapDrawable draw = new BitmapDrawable(Bitmap.createScaledBitmap(tmpImg, 16, 16, false));
+            //   airplaneToggleButton.setBackground(draw);
+        }else{
+            ico = deliverableIcon[i];
+        }
+        return ico;
+    }
+
+
+    public String getGoogleAppLabel(int i) {
+        return deliverableAppLabel[i];
+    }
+
+    public String getGooglePackageName(int i) {
+        return deliverablePackageName[i];
+    }
+
+
+    public Drawable getNewIcon(int i) {
+        Drawable ico;
+        if(i==-1){
+            //ico = mContext.getResources().getDrawable(R.drawable.blueblurbg);
+            //  d.setAlpha(200);
+            //  bottomDrawerView.setBackground(d);
+
+            Bitmap tmpImg = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.defaultaddicon);
+            ico = new BitmapDrawable(mContext.getResources(),tmpImg);
+            //   BitmapDrawable draw = new BitmapDrawable(Bitmap.createScaledBitmap(tmpImg, 16, 16, false));
+            //   airplaneToggleButton.setBackground(draw);
+        }else{
+            ico = deliverableIcon[i];
+        }
+        return ico;
+    }
+
+
+    public String getNewAppLabel(int i) {
+        return deliverableAppLabel[i];
+    }
+
+
+
+
+    public String getNewPackageName(int i) {
+        return deliverablePackageName[i];
+    }
 
     public void setHiddenAppPackageName(String hidPackName){
         hiddenSize ++;
         hiddenAppPackageName.add(hidPackName);
     }
+
+
 }

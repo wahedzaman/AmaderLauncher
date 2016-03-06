@@ -49,7 +49,8 @@ public class AppDrawerClickListener implements OnItemClickListener, AdapterView.
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
         if(isItLongPress == false){
-            Intent  launchIntent = packageManager.getLaunchIntentForPackage(applicationPackages.getPackageName(position));
+            Intent  launchIntent;
+            launchIntent = packageManager.getLaunchIntentForPackage(applicationPackages.getPackageName(position));
             myContext.startActivity(launchIntent);
         }
     }

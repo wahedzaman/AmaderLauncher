@@ -33,6 +33,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.widget.ArrayAdapter;
 import android.widget.CalendarView;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -53,14 +54,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     CustomApplicationDrawerAdapter customDrawerAdapter;
     AppDrawerClickListener appDrawerClickListener;
 
-    GridView appDrawerView;
-    LinearLayout appTrayView, slideDrawerView, mainHomeView, bottomDrawerView, appdrawerLongpressDetails;
+    GridView appDrawerView, newAppGrid, googleAppGrid;
+    LinearLayout appTrayView, slideDrawerView, mainHomeView, bottomDrawerView, appdrawerLongpressDetails, rightSideDrawerView;
     ImageButton appDrawerHomeButton, appDrawerBuuton1,appDrawerBuuton2,appDrawerBuuton3,appDrawerBuuton4,bottomDrawerbutton1,bottomDrawerbutton2,bottomDrawerbutton3,bottomDrawerbutton4,bottomDrawerbutton5,bottomDrawerbutton6,bottomDrawerbutton7,bottomDrawerbutton8,bottomDrawerbutton9,bottomDrawerbutton10;
 
     private boolean isAppDrawerVisible = false;
     private boolean isAppTrayVisible = false;
     private boolean isBottomDrawerVisible = false;
     private boolean isAppDrawerLongpressDetailsVisible = false;
+    private boolean isRightTrayVisible = false;
 
     DisplayMetrics dmetrics = new DisplayMetrics();
 
@@ -95,6 +97,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     PackageManager packagemanager;
 
     CalenderConversion myCalenderConversion;
+    RightSlideDrawer rightSlideDrawer;
 
 
 
@@ -109,7 +112,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         appTrayFadeInOut = false;
         appTraySlideInOUt = true;
-
 
 
         initiateView();
@@ -161,12 +163,18 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         calendar = (CalendarView) findViewById(R.id.calendar);
 
         appDrawerHomeButton = (ImageButton) findViewById(R.id.homeButtonAppDrawer);
+
         bottomDrawerView = (LinearLayout) findViewById(R.id.bottomDrawerViewHolder);
         mainHomeView = (LinearLayout) findViewById(R.id.mainHomeView);
         slideDrawerView = (LinearLayout) findViewById(R.id.slideDrawer);
         appTrayView = (LinearLayout) findViewById(R.id.appTrayHolder);
         appdrawerLongpressDetails = (LinearLayout) findViewById(R.id.appdrawerLongPressDetailsLayout);
+
+        rightSideDrawerView = (LinearLayout)findViewById(R.id.rightSlideDrawer);
+
         appDrawerView = (GridView) findViewById(R.id.appDrawerGridView);
+        newAppGrid = (GridView) findViewById(R.id.newappDrawerGridView);
+        googleAppGrid = (GridView) findViewById(R.id.googleappDrawerGridView);
     }
 
     @Override
@@ -186,10 +194,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         sPrefs.initializeSharedPrefs();
         initialSetup = sPrefs.getBool();
 
-        myCalenderConversion = new CalenderConversion();
-
         packages = new ApplicationPackage(this);
         packages.initializePackages();
+
+        myCalenderConversion = new CalenderConversion();
+        rightSlideDrawer = new RightSlideDrawer(this ,packages,rightSideDrawerView,mainHomeView, newAppGrid, googleAppGrid);
 
         customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
 
@@ -238,6 +247,10 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             //do nothing
         }else{
             appdrawerLongpressDetails.setVisibility(View.INVISIBLE);
+        }if(rightSlideDrawer.getRightSlideStatus()){
+            //do nothing
+        }else{
+            rightSideDrawerView.setVisibility(View.INVISIBLE);
         }
 
 
@@ -279,12 +292,18 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSwipeRight() {
-                getSliderDrawerInView();
+                if(rightSlideDrawer.getRightSlideStatus()){
+                    rightSlideDrawer.getRightSlideDrawerInView();
+                }else{
+                    getSliderDrawerInView();
+                }
             }
 
             public void onSwipeLeft() {
                 if(isAppTrayVisible){
                     getSliderDrawerInView();
+                }else{
+                    rightSlideDrawer.getRightSlideDrawerInView();
                 }
             }
 
@@ -617,6 +636,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
        // super.onBackPressed();
         if(appDrawerClickListener.getAppDetailsMenuVisibility()){
             appDrawerClickListener.getDetailsMenuInView();
+        }else if(rightSlideDrawer.getRightSlideStatus()){
+            rightSlideDrawer.getRightSlideDrawerInView();
         }else if(isBottomDrawerVisible){
             getBottomDrawerInView();
         }
@@ -631,6 +652,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     //this will open or close the app drawer.
     public void homeClicked(){
        if(appTrayFadeInOut){
+           appDrawerClickListener.resetVisibilityAndOther();
            animateFadeInOut();
        }
         else if(appTraySlideInOUt){
@@ -829,7 +851,12 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         ContentResolver cResolver = this.getApplicationContext().getContentResolver();
         String x = Settings.System.getString(cResolver, Settings.System.SCREEN_BRIGHTNESS);
-        brightnessBar.setProgress(Integer.parseInt(x));
+        int brightVal = Integer.parseInt(x);
+        if(brightVal==0){
+            brightnessBar.setProgress(brightVal);
+        }else{
+            brightnessBar.setProgress(brightVal);
+        }
 
         wifiManager = (WifiManager) this.getSystemService(Context.WIFI_SERVICE);
         wifiState = wifiManager.isWifiEnabled();
