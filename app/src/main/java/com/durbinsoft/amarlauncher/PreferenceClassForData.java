@@ -44,6 +44,8 @@ public class PreferenceClassForData {
     Context mContext;
     static SharedPreferences.Editor editor;
 
+    static boolean isAnyChangeMade = false;
+
 
     private String SP_NAME = "AMAR_LAUNCHER_SP";
     private String SP_INITIATED = "AMAR_LAUNCHER_INITIATED";
@@ -259,6 +261,12 @@ public class PreferenceClassForData {
         spFooter();
     }
 
+    public void setChangeMadeBool(boolean val){
+        isAnyChangeMade = val;
+    }
+
+    public boolean getAnyChangeMadeBool(){ return isAnyChangeMade;}
+
     public void setApps(String ap1,String appPositionPrefsName){
         spHeader();
         editor.putString(appPositionPrefsName,ap1);
@@ -272,6 +280,7 @@ public class PreferenceClassForData {
         editor.putString(SP_APP3, ap3);
         editor.putString(SP_APP4, ap4);
         spFooter();
+        isAnyChangeMade = true;
     }
 
 
