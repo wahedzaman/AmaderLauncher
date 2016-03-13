@@ -47,6 +47,17 @@
             android:theme="@android:style/Theme.Holo.NoActionBar"
             android:name=".AppChooserApplication">
         </activity>
+        <receiver
+            android:name="MyAdminReceiver"
+            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            <meta-data
+                android:name="android.app.device_admin"
+                android:resource="@xml/admin"/>
+
+            <intent-filter>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>

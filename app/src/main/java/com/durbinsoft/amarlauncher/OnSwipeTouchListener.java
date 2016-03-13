@@ -42,6 +42,12 @@ public class OnSwipeTouchListener implements OnTouchListener {
         }
 
         @Override
+        public boolean onDoubleTap(MotionEvent e) {
+            onDoubleTapOccured();
+            return super.onDoubleTap(e);
+        }
+
+        @Override
         public boolean onSingleTapUp(MotionEvent e) {
             onSingleTap();
             return  true;
@@ -96,4 +102,6 @@ public class OnSwipeTouchListener implements OnTouchListener {
 
     public void onLongPressDown(){
     }
+
+    public void onDoubleTapOccured(){}
 }

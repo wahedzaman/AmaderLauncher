@@ -4,8 +4,10 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.admin.DevicePolicyManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
+import android.content.ComponentName;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -85,9 +87,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     PackageManager packagemanager;
 
     CalenderConversion myCalenderConversion;
-    RightSlideDrawer rightSlideDrawer;
 
     private boolean justStarted = true;
+
+
+
+    private static final int ADMIN_INTENT = 15;
+    private static final String description = "Please provide proper permission to lock the phone on double tap";
+    private DevicePolicyManager mDevicePolicyManager;
+    private ComponentName mComponentName;
 
 
 
@@ -111,6 +119,14 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
 
         if(initialSetup){
+            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mComponentName);
+            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,description);
+            startActivityForResult(intent, ADMIN_INTENT);
+
+            //to remove admin
+            //mDevicePolicyManager.removeActiveAdmin(mComponentName);
+
             Intent i = new Intent(this,AppChooserApplication.class);
             startActivity(i);
         }
@@ -193,6 +209,12 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     public void setAllAdapterAndEverything(){
 
+        mDevicePolicyManager = (DevicePolicyManager)getSystemService(
+                Context.DEVICE_POLICY_SERVICE);
+        mComponentName = new ComponentName(this, MyAdminReceiver.class);
+
+
+
         packagemanager = getPackageManager();
         sPrefs = new PreferenceClassForData(this);
         sPrefs.initializeSharedPrefs();
@@ -202,7 +224,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         packages.initializePackages();
 
         myCalenderConversion = new CalenderConversion();
-        rightSlideDrawer = new RightSlideDrawer(this ,packages,rightSideDrawerView,mainHomeView, newAppGrid, googleAppGrid);
 
         customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
 
@@ -251,13 +272,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             //do nothing
         }else{
             appdrawerLongpressDetails.setVisibility(View.INVISIBLE);
-        }if(rightSlideDrawer.getRightSlideStatus()){
-            //do nothing
-        }else{
-            rightSideDrawerView.setVisibility(View.INVISIBLE);
         }
-
-
 
         //below code handles appdelete,apphide and appdetails
         appDeleteTv.setOnTouchListener(new OnSwipeTouchListener(this) {
@@ -296,20 +311,25 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSwipeRight() {
-                if(rightSlideDrawer.getRightSlideStatus()){
-                    rightSlideDrawer.getRightSlideDrawerInView();
-                }else{
+                if(!isAppTrayVisible){
+                    getSliderDrawerInView();
+                }
+
+            }
+
+            public void onSwipeLeft() {
+                if(isAppTrayVisible){
                     getSliderDrawerInView();
                 }
             }
 
-            public void onSwipeLeft() {
-                /*
-                if(isAppTrayVisible){
-                    getSliderDrawerInView();
+            public void onDoubleTapOccured(){
+                boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
+                if (isAdmin) {
+                    mDevicePolicyManager.lockNow();
                 }else{
-                    rightSlideDrawer.getRightSlideDrawerInView();
-                }*/
+                    Toast.makeText(getApplicationContext(), "Not Registered as Admin", Toast.LENGTH_SHORT).show();
+                }
             }
 
             public void onSwipeBottom() {
@@ -656,8 +676,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
        // super.onBackPressed();
         if(appDrawerClickListener.getAppDetailsMenuVisibility()){
             appDrawerClickListener.getDetailsMenuInView();
-        }else if(rightSlideDrawer.getRightSlideStatus()){
-            rightSlideDrawer.getRightSlideDrawerInView();
         }else if(isBottomDrawerVisible){
             getBottomDrawerInView();
         }
@@ -716,7 +734,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         // direction true == in and false == out
         if(isBottomDrawerVisible == false){
             initializeCalendar();
-          //  mainHomeView.animate().translationX(slideDrawerView.getWidth());
+            //  mainHomeView.animate().translationX(slideDrawerView.getWidth());
             bottomDrawerView.setVisibility(View.VISIBLE);
             bottomDrawerView.setAlpha(0.0f);
             bottomDrawerView.animate().translationY(heightPixels).alpha(1.0f);
@@ -734,8 +752,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    public void animateSlideInOut(){
-        if(isAppDrawerVisible) {
+    public void animateSlideInOut() {
+        if (isAppDrawerVisible) {
             appDrawerView.animate().translationY(mainHomeView.getHeight()).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -752,8 +770,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    public void animateFadeInOut(){
-        if(isAppDrawerVisible) {
+    public void animateFadeInOut() {
+        if (isAppDrawerVisible) {
             appDrawerView.animate()
                     .alpha(0.0f)
                     .setListener(new AnimatorListenerAdapter() {
@@ -764,7 +782,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                         }
                     });
             isAppDrawerVisible = false;
-        }else{
+        } else {
             appDrawerView.setVisibility(View.VISIBLE);
             appDrawerView.setAlpha(0.0f);
             appDrawerView.animate().alpha(1.0f)
@@ -776,6 +794,17 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                         }
                     });;
             isAppDrawerVisible = true;
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        if (requestCode == ADMIN_INTENT) {
+            if (resultCode == RESULT_OK) {
+                Toast.makeText(getApplicationContext(), "Registered As Admin", Toast.LENGTH_SHORT).show();
+            }else{
+                Toast.makeText(getApplicationContext(), "Failed to register as Admin", Toast.LENGTH_SHORT).show();
+            }
         }
     }
 

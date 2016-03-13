@@ -6,7 +6,7 @@
     <include layout="@layout/home_main_and_app_drawer" />
 
     <include layout="@layout/left_side_drawer" />
-    <include layout="@layout/right_side_drawer" />
+
 
     <include layout="@layout/bottom_drawer" />
 

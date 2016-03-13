@@ -37,7 +37,7 @@ public class RightSlideDrawer {
 
         customAdaper = new CustomApplicationDrawerAdapter(mcontext,aPackage);
 
-        customAdaper.setGoogleAppStatus(true);
+
         googleAppDrawer.setAdapter(customAdaper);
 
         //newAppDrawer.setOnItemClickListener( new NewAppDrawerClickListener(mcontext, ap));

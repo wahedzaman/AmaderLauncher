@@ -4,9 +4,6 @@ package com.durbinsoft.amarlauncher;
  * Created by Md.Wahuduzzaman on 2/22/2016.
  */
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -15,8 +12,9 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
-import android.widget.ImageButton;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class ApplicationPackage {
 
@@ -34,11 +32,6 @@ public class ApplicationPackage {
     static String[] deliverablePackageName;
     static String[] deliverableAppLabel;
     static int deliverableSize;
-
-    static Drawable[] googleIcon;
-    static String[] googlePackageName;
-    static String[] googleAppLabel;
-    static int googleAppSize;
 
     static Drawable[] newIcon;
     static String[] newPackageName;
@@ -79,8 +72,8 @@ public class ApplicationPackage {
         }
 
         sortApps();
-        resortForHiddenApps();
-        initiateGooglePacks();
+        //resortForHiddenApps();
+        //initiateGooglePacks();
     }
 
     private void sortApps() {
@@ -108,36 +101,15 @@ public class ApplicationPackage {
         }
     }
 
-    private void initiateGooglePacks(){
-        ArrayList<String> pac  = new ArrayList<String>();
-        for(int i =0; i<deliverableSize;i++){
-           for (int j=0; j<gAppsPacks.length; j++){
-               if(gAppsPacks[j].equals(deliverablePackageName[i])){
-                    pac.add(gAppsPacks[j]);
-                   break;
-               }
-           }
-        }
-        googleAppSize = pac.size();
-        googlePackageName = new String[googleAppSize];
-        googleAppLabel = new String[googleAppSize];
-        googleIcon = new Drawable[googleAppSize];
-
-        for(int i=0;i<googleAppSize;i++){
-            googlePackageName[i] = pac.get(i);
-            googleAppLabel[i] = getAppLabel(searchAndReturnPackage(pac.get(i)));
-            googleIcon[i] = getIcon(searchAndReturnPackage(pac.get(i)));
-        }
-    }
 
     public int searchAndReturnPackage(String iPackageName){
         int packageIndexNumber =-1;
-        for(int i=0;i<deliverableSize;i++){
-            if(deliverablePackageName.length>0){
+        for(int i=0;i<size;i++){
+            if(packageName.length>0){
                 if(iPackageName.equals("com.durbinsoft.amarlauncher")){
                     packageIndexNumber =-1;
                 }
-                else if(deliverablePackageName[i].equals(iPackageName)){
+                else if(packageName[i].equals(iPackageName)){
                     packageIndexNumber = i;
                 }
             }
@@ -220,74 +192,29 @@ public class ApplicationPackage {
             //   BitmapDrawable draw = new BitmapDrawable(Bitmap.createScaledBitmap(tmpImg, 16, 16, false));
             //   airplaneToggleButton.setBackground(draw);
         }else{
-            ico = deliverableIcon[i];
+            ico = icon[i];
         }
         return ico;
     }
 
     public String getPackageName(int i) {
-        return deliverablePackageName[i];
+        return packageName[i];
     }
 
     public String getAppLabel(int i) {
-        return deliverableAppLabel[i];
-    }
-
-
-    public Drawable getGoogleIcon(int i) {
-        Drawable ico;
-        if(i==-1){
-            //ico = mContext.getResources().getDrawable(R.drawable.blueblurbg);
-            //  d.setAlpha(200);
-            //  bottomDrawerView.setBackground(d);
-
-              Bitmap tmpImg = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.defaultaddicon);
-            ico = new BitmapDrawable(mContext.getResources(),tmpImg);
-            //   BitmapDrawable draw = new BitmapDrawable(Bitmap.createScaledBitmap(tmpImg, 16, 16, false));
-            //   airplaneToggleButton.setBackground(draw);
-        }else{
-            ico = deliverableIcon[i];
-        }
-        return ico;
-    }
-
-
-    public String getGoogleAppLabel(int i) {
-        return deliverableAppLabel[i];
-    }
-
-    public String getGooglePackageName(int i) {
-        return deliverablePackageName[i];
-    }
-
-
-    public Drawable getNewIcon(int i) {
-        Drawable ico;
-        if(i==-1){
-            //ico = mContext.getResources().getDrawable(R.drawable.blueblurbg);
-            //  d.setAlpha(200);
-            //  bottomDrawerView.setBackground(d);
-
-            Bitmap tmpImg = BitmapFactory.decodeResource(mContext.getResources(), R.drawable.defaultaddicon);
-            ico = new BitmapDrawable(mContext.getResources(),tmpImg);
-            //   BitmapDrawable draw = new BitmapDrawable(Bitmap.createScaledBitmap(tmpImg, 16, 16, false));
-            //   airplaneToggleButton.setBackground(draw);
-        }else{
-            ico = deliverableIcon[i];
-        }
-        return ico;
+        return appLabel[i];
     }
 
 
     public String getNewAppLabel(int i) {
-        return deliverableAppLabel[i];
+        return appLabel[i];
     }
 
 
 
 
     public String getNewPackageName(int i) {
-        return deliverablePackageName[i];
+        return packageName[i];
     }
 
     public void setHiddenAppPackageName(String hidPackName){

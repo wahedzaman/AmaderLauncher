@@ -14,9 +14,6 @@ import android.widget.TextView;
 
 public class CustomApplicationDrawerAdapter extends BaseAdapter{
 
-    public static boolean isGoogleApp = false;
-    public static boolean isNewApp = false;
-
     private static Context myContext;
     private static ApplicationPackage applicationPackage;
     private PreferenceClassForData sPrefs;
@@ -81,36 +78,13 @@ public class CustomApplicationDrawerAdapter extends BaseAdapter{
             viewHolder = (ViewHolder) convertedView.getTag();
         }
 
-        if(isGoogleApp){
-            viewHolder.text.setText(applicationPackage.getGoogleAppLabel(position));
-            viewHolder.icon.setImageDrawable(applicationPackage.getGoogleIcon(position));
-        }else if(isNewApp){
-            viewHolder.text.setText(applicationPackage.getGoogleAppLabel(position));
-            viewHolder.icon.setImageDrawable(applicationPackage.getGoogleIcon(position));
-        }else{
             viewHolder.text.setText(applicationPackage.getNewAppLabel(position));
             viewHolder.icon.setImageDrawable(applicationPackage.getIcon(position));
-        }
 
-        isGoogleApp = false;
-        isNewApp = false;
+
+
 
         return convertedView;
-    }
-
-    public boolean getGoogleAppStatus(){
-        return isGoogleApp;
-    }
-    public boolean getNewAppStatus(){
-        return isNewApp;
-    }
-
-    public void setGoogleAppStatus(boolean x){
-        isGoogleApp = x;
-    }
-
-    public void setNewAppStatus(boolean x){
-        isNewApp = x;
     }
 
 }
