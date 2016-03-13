@@ -304,11 +304,12 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSwipeLeft() {
+                /*
                 if(isAppTrayVisible){
                     getSliderDrawerInView();
                 }else{
                     rightSlideDrawer.getRightSlideDrawerInView();
-                }
+                }*/
             }
 
             public void onSwipeBottom() {
@@ -1078,6 +1079,7 @@ public class PackageChangeBroadCastListener extends BroadcastReceiver{
             appDrawerView.setOnItemClickListener(new AppDrawerClickListener(getApplicationContext(), packages));
             */
             setAllAdapterAndEverything();
+            isAnyChangeMade = true;
         }
     }
 
