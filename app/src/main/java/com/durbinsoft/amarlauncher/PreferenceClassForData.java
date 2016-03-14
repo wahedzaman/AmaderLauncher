@@ -4,6 +4,9 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /**
  * Created by Md.Wahuduzzaman on 3/3/2016.
  */
@@ -77,6 +80,11 @@ public class PreferenceClassForData {
 
     public String SP_HAPPNumber = "AMAR_LAUNCHER_HAPPNUMBER";
 
+    public static int lockAppsConter = 0;
+    public String SP_LCOUNTER = "AMAR_LAUNCHER_LOCK_COUNTER";
+
+    private static ArrayList<String> lockedApps = new ArrayList<String>();
+
     PreferenceClassForData(Context mContext){
         this.mContext = mContext;
         sp = mContext.getSharedPreferences(SP_NAME,mContext.MODE_PRIVATE);
@@ -88,6 +96,7 @@ public class PreferenceClassForData {
 
         initialSetup = sp.getBoolean(SP_INITIATED, true);
         hiddenAppsNumber = sp.getInt(SP_HAPPNumber, 0);
+        lockAppsConter = sp.getInt(SP_LCOUNTER,0);
 
         app1 = sp.getString(SP_APP1, "com.durbinsoft.amarlauncher");
         app2 = sp.getString(SP_APP2, "com.durbinsoft.amarlauncher");
@@ -117,7 +126,9 @@ public class PreferenceClassForData {
             Happ10 = sp.getString(SP_HAPP10, "com.durbinsoft.amarlauncher");
 
         }
-
+        if(lockAppsConter>0){
+            initLockedApps();
+        }
     }
     public String getSelectedApp(int x){
         initializeSharedPrefs();
@@ -269,7 +280,7 @@ public class PreferenceClassForData {
 
     public void setApps(String ap1,String appPositionPrefsName){
         spHeader();
-        editor.putString(appPositionPrefsName,ap1);
+        editor.putString(appPositionPrefsName, ap1);
         spFooter();
     }
 
@@ -290,6 +301,79 @@ public class PreferenceClassForData {
     }
     private void spFooter(){
         editor.commit();
+    }
+
+    public void setLockedApps(String appPackName){
+        String prefsName;
+        spHeader();
+        if(appPackName.equals("com.durbinsoft.amarlauncher")){
+            prefsName = "Locked"+ lockAppsConter;
+        }else{
+            lockAppsConter ++;
+            prefsName = "Locked"+ lockAppsConter;
+            Toast.makeText(mContext,"Application Locked!",Toast.LENGTH_SHORT).show();
+        }
+        editor.putString(prefsName, appPackName);
+        editor.putInt(SP_LCOUNTER, lockAppsConter);
+        spFooter();
+    }
+
+    public boolean checkAppPackLockStat(String appPackName){
+        boolean boolStatus = false;
+        for(int i=0; i<lockAppsConter;i++){
+            if(lockedApps.get(i).equals(appPackName)){
+               boolStatus = true;
+                break;
+            }
+        }
+
+        return boolStatus;
+    }
+
+    public int getLockAppsConter(){
+        return lockAppsConter;
+    }
+
+    private void initLockedApps(){
+        String prefsName;
+        for(int i=0; i<lockAppsConter;i++){
+            prefsName= "Locked"+ (i+1);
+            lockedApps.add(sp.getString(prefsName,"com.durbinsoft.amarlauncher"));
+        }
+    }
+
+    public void removeLockedApp(String appPackName){
+        lockAppsConter--;
+        int newLockAppsCounter = lockAppsConter;
+        ArrayList <String> newLockedApps = new ArrayList<String>();
+        if(lockAppsConter == 0){
+            setLockedApps("com.durbinsoft.amarlauncher");
+        }else{
+            for(int i =0; i<newLockAppsCounter; i++){
+                if(checkAppPackLockStat(appPackName)){
+
+                }else{
+                    newLockedApps.add(lockedApps.get(i));
+                }
+            }
+            lockAppsConter = 0;
+            for(int i =0; i<newLockAppsCounter; i++){
+                setLockedApps(newLockedApps.get(i));
+            }
+            newLockAppsCounter = 0;
+            newLockedApps = null;
+        }
+        Toast.makeText(mContext,"Application UnLocked!",Toast.LENGTH_SHORT).show();
+    }
+
+    public void toggleAppLock(String appPackName){
+        boolean res = checkAppPackLockStat(appPackName);
+        if(res){
+            removeLockedApp(appPackName);
+        }else{
+            setLockedApps(appPackName);
+        }
+        initializeSharedPrefs();
     }
 
 }

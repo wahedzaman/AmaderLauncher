@@ -205,13 +205,9 @@ public class ApplicationPackage {
         return appLabel[i];
     }
 
-
     public String getNewAppLabel(int i) {
         return appLabel[i];
     }
-
-
-
 
     public String getNewPackageName(int i) {
         return packageName[i];
@@ -221,6 +217,5 @@ public class ApplicationPackage {
         hiddenSize ++;
         hiddenAppPackageName.add(hidPackName);
     }
-
 
 }

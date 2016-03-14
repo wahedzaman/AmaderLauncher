@@ -253,9 +253,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         appDrawerView.setAdapter(customDrawerAdapter);
 
         appDrawerView.setTextFilterEnabled(true);
-        appDrawerClickListener = new AppDrawerClickListener(this, packages,appdrawerLongpressDetails,appDrawerView);
+        appDrawerClickListener = new AppDrawerClickListener(this, packages,appdrawerLongpressDetails,appDrawerView,sPrefs);
 
-        appDrawerView.setOnItemClickListener(new AppDrawerClickListener(this, packages));
+        appDrawerView.setOnItemClickListener(new AppDrawerClickListener(this, packages,sPrefs));
         appDrawerView.setOnItemLongClickListener(appDrawerClickListener);
 
         //Drawable d = getResources().getDrawable(R.drawable.blueblurbg);
@@ -302,9 +302,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         appLockTv.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onSingleTap() {
-
+                sPrefs.toggleAppLock(appDrawerClickListener.getPressedAppName());
                 appDrawerClickListener.resetVisibilityAndOther();
-                Toast.makeText(getApplicationContext(),"Application Locked!",Toast.LENGTH_SHORT).show();
             }
 
         });
@@ -407,6 +406,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(appDrawerBuuton1, sPrefs.SP_APP1);
             }
 
@@ -417,6 +417,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onLongPressDown(){
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(appDrawerBuuton2, sPrefs.SP_APP2);
             }
 
@@ -433,6 +434,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onLongPressDown(){
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(appDrawerBuuton3, sPrefs.SP_APP3);
             }
 
@@ -449,6 +451,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onLongPressDown(){
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(appDrawerBuuton4, sPrefs.SP_APP4);
             }
 
@@ -465,6 +468,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         bottomDrawerbutton1.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton1, sPrefs.SP_APP5);
             }
 
@@ -477,6 +481,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         bottomDrawerbutton2.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton2, sPrefs.SP_APP6);
             }
 
@@ -489,6 +494,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         bottomDrawerbutton3.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton3, sPrefs.SP_APP7);
             }
 
@@ -501,6 +507,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         bottomDrawerbutton4.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton4, sPrefs.SP_APP8);
             }
 
@@ -513,6 +520,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         bottomDrawerbutton5.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton5, sPrefs.SP_APP9);
             }
 
@@ -525,6 +533,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         bottomDrawerbutton6.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton6, sPrefs.SP_APP10);
             }
 
@@ -537,6 +546,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         bottomDrawerbutton7.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton7, sPrefs.SP_APP11);
             }
 
@@ -549,6 +559,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         bottomDrawerbutton8.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton8, sPrefs.SP_APP12);
             }
 
@@ -561,6 +572,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         bottomDrawerbutton9.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton9, sPrefs.SP_APP13);
             }
 
@@ -573,6 +585,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         bottomDrawerbutton10.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
                 getApplicationListForBottomDrawer(bottomDrawerbutton10, sPrefs.SP_APP14);
             }
 
@@ -1046,7 +1059,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         Bitmap tmpImg;
-        Button btn = (Button) v;
+        Button btn;
+        appDrawerClickListener.hapticVibreationFeedback();
 
         switch (v.getId()){
             case R.id.airplaneToggle:
@@ -1106,7 +1120,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 lightToggle.setImageBitmap(tmpImg);
                 break;
 
-
             //for calculator
             case R.id.btn_point:
                 if (str_show.toString() == "") {
@@ -1141,9 +1154,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 flag_num1 = false;
                 break;
             case R.id.btn_add:
+                btn = (Button) v;
                 setNum1(btn.getText().toString());
                 break;
             case R.id.btn_sub:
+                btn = (Button) v;
                 if (!flag_minus) {
                     if (str_show.toString().equals("")) {
                         str_show.append("-");
@@ -1155,9 +1170,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 setNum1(btn.getText().toString());
                 break;
             case R.id.btn_mul:
+                btn = (Button) v;
                 setNum1(btn.getText().toString());
                 break;
             case R.id.btn_div:
+                btn = (Button) v;
                 setNum1(btn.getText().toString());
                 break;
             case R.id.btn_equal:
@@ -1167,6 +1184,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 calculate();
                 break;
             default:
+                btn = (Button) v;
                 str_show.append(btn.getText().toString());
                 showInTextView(str_show.toString());
                 break;
@@ -1295,7 +1313,7 @@ public class PackageChangeBroadCastListener extends BroadcastReceiver{
             appDrawerView.setOnItemClickListener(new AppDrawerClickListener(getApplicationContext(), packages));
             */
             setAllAdapterAndEverything();
-            isAnyChangeMade = true;
+            sPrefs.setChangeMadeBool(true);
         }
     }
 

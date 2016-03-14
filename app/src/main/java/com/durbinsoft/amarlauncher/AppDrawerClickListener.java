@@ -16,6 +16,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 public class AppDrawerClickListener implements OnItemClickListener, AdapterView.OnItemLongClickListener{
 
@@ -25,8 +26,10 @@ public class AppDrawerClickListener implements OnItemClickListener, AdapterView.
     LinearLayout detailsMenu;
     GridView appDrawer;
     private static Vibrator vibrator;
+    PreferenceClassForData sPrefs;
 
     String appPackName;
+    int lockedAppCounter = 0;
 
     DisplayMetrics dmetrics = new DisplayMetrics();
     int heightPixels=dmetrics.heightPixels;
@@ -34,27 +37,41 @@ public class AppDrawerClickListener implements OnItemClickListener, AdapterView.
     private boolean isAppDrawerLongpressDetailsVisible = false;
     private static boolean isItLongPress = false;
 
-    public AppDrawerClickListener(Context c, ApplicationPackage ap){
+    public AppDrawerClickListener(Context c, ApplicationPackage ap, PreferenceClassForData prefs){
         myContext = c;
         packageManager = c.getPackageManager();
         applicationPackages = ap;
         vibrator = (Vibrator)c.getSystemService(Context.VIBRATOR_SERVICE);
+        sPrefs = prefs;
     }
-    public AppDrawerClickListener(Context c, ApplicationPackage ap,LinearLayout appDetailsMenu, GridView appDrawerView){
+    public AppDrawerClickListener(Context c, ApplicationPackage ap,LinearLayout appDetailsMenu, GridView appDrawerView,PreferenceClassForData prefs){
         myContext = c;
         packageManager = c.getPackageManager();
         applicationPackages = ap;
         detailsMenu = appDetailsMenu;
         appDrawer = appDrawerView;
         vibrator = (Vibrator) myContext.getSystemService(Context.VIBRATOR_SERVICE);
+        sPrefs = prefs;
     }
 
     @Override
     public void onItemClick(AdapterView<?> arg0, View arg1, int position, long arg3) {
+        // startActivity at the bottom.. and set launchable activity accordingly
+
         if(isItLongPress == false){
             Intent  launchIntent;
-            launchIntent = packageManager.getLaunchIntentForPackage(applicationPackages.getPackageName(position));
-            myContext.startActivity(launchIntent);
+            lockedAppCounter = sPrefs.getLockAppsConter();
+            if(lockedAppCounter>0){
+                if(sPrefs.checkAppPackLockStat(applicationPackages.getPackageName(position))){
+                    Toast.makeText(myContext,"App is Locked",Toast.LENGTH_SHORT).show();
+                }else{
+                    launchIntent = packageManager.getLaunchIntentForPackage(applicationPackages.getPackageName(position));
+                    myContext.startActivity(launchIntent);
+                }
+            }else{
+                launchIntent = packageManager.getLaunchIntentForPackage(applicationPackages.getPackageName(position));
+                myContext.startActivity(launchIntent);
+            }
         }
     }
 
