@@ -13,10 +13,30 @@
         android:orientation="vertical"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_weight="6"
+        android:layout_weight="4"
         android:background="@android:color/white">
 
         <TextView
+            android:textStyle="bold"
+            android:id="@+id/appLockTv"
+            android:textColor="@android:color/black"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:layout_weight="1"
+            android:text="LOCK"/>
+        <LinearLayout
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            android:background="#d3d3d3"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_weight="1.95"
+            android:orientation="vertical">
+        </LinearLayout>
+
+        <TextView
+            android:textStyle="bold"
             android:id="@+id/appUnistalltv"
             android:textColor="@android:color/black"
             android:layout_width="fill_parent"
@@ -24,15 +44,8 @@
             android:gravity="center"
             android:layout_weight="1"
             android:text="UNINSTALL"/>
+
         <!--
-        <TextView
-            android:id="@+id/appDetailstv"
-            android:textColor="@android:color/black"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:gravity="center"
-            android:layout_weight="1"
-            android:text="DETIALS"/>
         <TextView
             android:id="@+id/appHidetv"
             android:textColor="@android:color/black"

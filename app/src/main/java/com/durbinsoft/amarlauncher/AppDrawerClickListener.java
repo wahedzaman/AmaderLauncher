@@ -9,13 +9,13 @@ import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Vibrator;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.LinearLayout;
-import android.widget.Toast;
 
 public class AppDrawerClickListener implements OnItemClickListener, AdapterView.OnItemLongClickListener{
 
@@ -24,6 +24,7 @@ public class AppDrawerClickListener implements OnItemClickListener, AdapterView.
     PackageManager packageManager;
     LinearLayout detailsMenu;
     GridView appDrawer;
+    private static Vibrator vibrator;
 
     String appPackName;
 
@@ -37,6 +38,7 @@ public class AppDrawerClickListener implements OnItemClickListener, AdapterView.
         myContext = c;
         packageManager = c.getPackageManager();
         applicationPackages = ap;
+        vibrator = (Vibrator)c.getSystemService(Context.VIBRATOR_SERVICE);
     }
     public AppDrawerClickListener(Context c, ApplicationPackage ap,LinearLayout appDetailsMenu, GridView appDrawerView){
         myContext = c;
@@ -44,6 +46,7 @@ public class AppDrawerClickListener implements OnItemClickListener, AdapterView.
         applicationPackages = ap;
         detailsMenu = appDetailsMenu;
         appDrawer = appDrawerView;
+        vibrator = (Vibrator) myContext.getSystemService(Context.VIBRATOR_SERVICE);
     }
 
     @Override
@@ -60,6 +63,7 @@ public class AppDrawerClickListener implements OnItemClickListener, AdapterView.
         isItLongPress = true;
         appPackName = applicationPackages.getPackageName(position);
         getDetailsMenuInView();
+        hapticVibreationFeedback();
         return false;
     }
 
@@ -96,6 +100,11 @@ public class AppDrawerClickListener implements OnItemClickListener, AdapterView.
 
     public void resetVisibilityAndOther(){
         appDrawer.setEnabled(true);
+        isAppDrawerLongpressDetailsVisible = true;
         getDetailsMenuInView();
+    }
+
+    public void hapticVibreationFeedback(){
+        vibrator.vibrate(50);
     }
 }

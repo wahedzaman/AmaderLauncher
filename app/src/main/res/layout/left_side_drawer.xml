@@ -67,8 +67,7 @@
                 android:orientation="vertical">
 
                 <include layout="@layout/side_bar_clock" />
-
-                <include layout="@layout/side_bar_calendar" />
+                <include layout="@layout/calculator_left_panel" />
 
             </LinearLayout>
 

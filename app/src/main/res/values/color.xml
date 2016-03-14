@@ -16,5 +16,19 @@
     <item name="black" type="color">#000000</item>
 
 
+    <color name="button_number_text">#ff232323</color>
+    <color name="show_text">#ff232323</color>
+    <color name="button_oper_text">#ffffff</color>
+    <color name="button_clear">#ffffff</color>
+    <color name="show_background">#ffffffff</color>
+    <color name="button_number_background">#33B5E5</color>
+    <color name="button_oper_background">#979797</color>
+
+    <color name="greyButtonPressed" >#979797</color>
+    <color name="grayDarkButtonNotPressed">#413f42</color>
+
+    <color name="greyOperButtonPressed" >#d3d3d3</color>
+    <color name="grayOperDarkButtonNotPressed">#5c5a5d</color>
+
 
 </resources>

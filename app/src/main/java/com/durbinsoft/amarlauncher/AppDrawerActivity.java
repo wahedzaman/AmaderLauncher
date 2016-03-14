@@ -21,11 +21,13 @@ import android.hardware.Camera;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.Bundle;
+import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
 import android.view.View;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.CalendarView;
 import android.widget.GridView;
 import android.widget.ImageButton;
@@ -35,6 +37,8 @@ import android.widget.ScrollView;
 import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import java.math.BigDecimal;
 
 
 public class AppDrawerActivity extends Activity implements View.OnClickListener{
@@ -51,7 +55,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private boolean isAppTrayVisible = false;
     private boolean isBottomDrawerVisible = false;
     private boolean isAppDrawerLongpressDetailsVisible = false;
-    private boolean isRightTrayVisible = false;
     private boolean isAnyChangeMade = false;
 
     DisplayMetrics dmetrics = new DisplayMetrics();
@@ -72,9 +75,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private TextView leftDrawerClockTimeText,leftDrawerClockDateText,leftDrawerNameText;
 
     //these textview below, acts like button
-    private TextView appDeleteTv,appDetailsTv,appHideTv;
+    private TextView appDeleteTv,appLockTv,appHideTv;
 
-    private CalendarView calendar;
     private PreferenceClassForData sPrefs;
 
     private String selectedAppPackageName = "";
@@ -89,6 +91,19 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     CalenderConversion myCalenderConversion;
 
     private boolean justStarted = true;
+
+    //for left side calculator
+    private TextView tv_show;
+    private Button btn_clear;
+    private StringBuffer str_show = new StringBuffer("");
+    private BigDecimal num1, num2;
+    private boolean flag_dot = true;
+    private boolean flag_num1 = false;
+    private String str_oper = null;
+    private String str_result = null;
+    private int scale = 2;
+    private boolean flag_minus = false;
+    //end for left side calculator
 
 
 
@@ -156,6 +171,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     public void initiateView()
     {
+        initView();
+
         airplaneToggle = (ImageView)findViewById(R.id.airplaneToggle);
         wifiToggle = (ImageView)findViewById(R.id.wifiToggle);
         bluetoothToggle = (ImageView)findViewById(R.id.bluetoothToggle);
@@ -168,7 +185,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
 
         appDeleteTv = (TextView) findViewById(R.id.appUnistalltv);
-        //appDetailsTv = (TextView) findViewById(R.id.appDetailstv);
+        appLockTv = (TextView) findViewById(R.id.appLockTv);
         // appHideTv = (TextView) findViewById(R.id.appHidetv);
 
 
@@ -190,8 +207,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         brightnessBar = (SeekBar) findViewById(R.id.bottomDrawerAppBrightnessSlider);
 
-        calendar = (CalendarView) findViewById(R.id.calendar);
-
         appDrawerHomeButton = (ImageButton) findViewById(R.id.homeButtonAppDrawer);
 
         bottomDrawerView = (LinearLayout) findViewById(R.id.bottomDrawerViewHolder);
@@ -205,6 +220,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         appDrawerView = (GridView) findViewById(R.id.appDrawerGridView);
         newAppGrid = (GridView) findViewById(R.id.newappDrawerGridView);
         googleAppGrid = (GridView) findViewById(R.id.googleappDrawerGridView);
+
     }
 
     public void setAllAdapterAndEverything(){
@@ -283,13 +299,16 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
         });
-        /*
-        appDetailsTv.setOnTouchListener(new OnSwipeTouchListener(this) {
+
+        appLockTv.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onSingleTap() {
+
                 appDrawerClickListener.resetVisibilityAndOther();
+                Toast.makeText(getApplicationContext(),"Application Locked!",Toast.LENGTH_SHORT).show();
             }
 
         });
+        /*
         appHideTv.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onSingleTap(){
                 sPrefs.setHiddenApps(appDrawerClickListener.getPressedAppName());
@@ -324,6 +343,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onDoubleTapOccured(){
+                appDrawerClickListener.hapticVibreationFeedback();
                 boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
                 if (isAdmin) {
                     mDevicePolicyManager.lockNow();
@@ -337,6 +357,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onLongPressDown(){
+                appDrawerClickListener.hapticVibreationFeedback();
                 Toast.makeText(getApplicationContext(),"long pressed",Toast.LENGTH_SHORT).show();
             }
 
@@ -361,6 +382,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         appDrawerHomeButton.setOnTouchListener(new OnSwipeTouchListener(this) {
 
             public void onSingleTap() {
+                appDrawerClickListener.resetVisibilityAndOther();
                 homeClicked();
             }
 
@@ -733,7 +755,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private void getBottomDrawerInView(){
         // direction true == in and false == out
         if(isBottomDrawerVisible == false){
-            initializeCalendar();
+
             //  mainHomeView.animate().translationX(slideDrawerView.getWidth());
             bottomDrawerView.setVisibility(View.VISIBLE);
             bottomDrawerView.setAlpha(0.0f);
@@ -895,6 +917,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     }
 
     private void checkSystemStatus(){
+
         //check wifi state,bluetooth state, rotation state, brightness state and set the value accordingly to the view.
         //call the updateGfx method to update gfx AND BROADCAST LISTERNER FOR ALL THESE SERVICE,, SO THAT ANY CHANGE CAN EFFECT IMMEDIATELY.
 
@@ -1023,6 +1046,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     @Override
     public void onClick(View v) {
         Bitmap tmpImg;
+        Button btn = (Button) v;
+
         switch (v.getId()){
             case R.id.airplaneToggle:
                  if(airplaneState){
@@ -1080,18 +1105,180 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 }
                 lightToggle.setImageBitmap(tmpImg);
                 break;
+
+
+            //for calculator
+            case R.id.btn_point:
+                if (str_show.toString() == "") {
+                    break;
+                } else if (flag_dot) {
+                    str_show.append(".");
+                    showInTextView(str_show.toString());
+                    flag_dot = false;
+                }
+                break;
+            case R.id.btn_clear:
+                if (!(str_show.toString() == "")) {
+                    if (!flag_dot) {
+                        String lastStr = String.valueOf(str_show.charAt(str_show
+                                .length() - 1));
+                        if (lastStr.equals(".")) {
+                            flag_dot = true;
+                        }
+                    }
+                    str_show.deleteCharAt(str_show.length() - 1);
+                    if(str_show.toString().equals("")){
+                        flag_minus = false;
+                    }
+                    showInTextView(str_show.toString());
+                } else {
+                    showInTextView("");
+                    str_result = null;
+                    str_show = new StringBuffer("");
+                    flag_dot = true;
+                    flag_minus = false;
+                }
+                flag_num1 = false;
+                break;
+            case R.id.btn_add:
+                setNum1(btn.getText().toString());
+                break;
+            case R.id.btn_sub:
+                if (!flag_minus) {
+                    if (str_show.toString().equals("")) {
+                        str_show.append("-");
+                        showInTextView(str_show.toString());
+                        flag_minus = true;
+                        break;
+                    }
+                }
+                setNum1(btn.getText().toString());
+                break;
+            case R.id.btn_mul:
+                setNum1(btn.getText().toString());
+                break;
+            case R.id.btn_div:
+                setNum1(btn.getText().toString());
+                break;
+            case R.id.btn_equal:
+                if (str_oper == null || str_show.toString().equals("")
+                        || !flag_num1)
+                    break;
+                calculate();
+                break;
+            default:
+                str_show.append(btn.getText().toString());
+                showInTextView(str_show.toString());
+                break;
         }
     }
 
-    public void initializeCalendar() {
-        calendar.setEnabled(false);
-       calendar.setShowWeekNumber(false);
-        calendar.setFirstDayOfWeek(1);
-        calendar.setSelectedWeekBackgroundColor(getResources().getColor(R.color.green));
-        calendar.setUnfocusedMonthDateColor(getResources().getColor(R.color.transparent));
-        calendar.setWeekSeparatorLineColor(getResources().getColor(R.color.transparent));
-        calendar.setSelectedDateVerticalBar(R.color.darkgreen);
+
+
+//for left side calculator
+private void setNum1(String oper) {
+    if (str_oper != null && !str_show.toString().equals("") && flag_num1) {
+        calculate();
     }
+    str_oper = oper;
+    if (!(str_show.toString() == "") && !str_show.toString().equals("-")) {
+        num1 = new BigDecimal(str_show.toString());
+        showInTextView(str_show.toString());
+        str_show = new StringBuffer("");
+        str_result = null;
+        flag_num1 = true;
+        flag_minus = false;
+    } else if (str_result != null) {
+        num1 = new BigDecimal(str_result);
+        showInTextView(str_result);
+        str_result = null;
+        flag_num1 = true;
+        flag_minus = false;
+    }
+    flag_dot = true;
+}
+
+    private void calculate() {
+        if(str_show.toString().equals("-")) return;
+        double result = 0;
+        num2 = new BigDecimal(str_show.toString());
+        if (str_oper.equals("+")) {
+            result = Calculate.add(num1, num2);
+        }
+        if (str_oper.equals("-")) {
+            result = Calculate.sub(num1, num2);
+        }
+        if (str_oper.equals("*")) {
+            result = Calculate.mul(num1, num2);
+        }
+        if (str_oper.equals("/")) {
+            if (!num2.equals(BigDecimal.ZERO)) {
+                result = Calculate.div(num1, num2, scale);
+            } else {
+                showInTextView("");
+                str_show = new StringBuffer("");
+                str_oper = null;
+                flag_num1 = false;
+                flag_dot = true;
+                return;
+            }
+        }
+        str_result = String.valueOf(Calculate.round(result, scale));
+        String[] resultStrings = str_result.split("\\.");
+        if (resultStrings[1].equals("0")) {
+            str_result = resultStrings[0];
+        }
+        showInTextView(str_result);
+        str_show = new StringBuffer("");
+        flag_dot = true;
+        flag_num1 = false;
+        str_oper = null;
+        flag_minus = true;
+    }
+
+    private void showInTextView(String str) {
+        tv_show.setText(str);
+    }
+
+    private void initView() {
+        tv_show = (TextView) findViewById(R.id.tv_show);
+        findViewById(R.id.btn0).setOnClickListener(this);
+        findViewById(R.id.btn1).setOnClickListener(this);
+        findViewById(R.id.btn2).setOnClickListener(this);
+        findViewById(R.id.btn3).setOnClickListener(this);
+        findViewById(R.id.btn4).setOnClickListener(this);
+        findViewById(R.id.btn5).setOnClickListener(this);
+        findViewById(R.id.btn6).setOnClickListener(this);
+        findViewById(R.id.btn7).setOnClickListener(this);
+        findViewById(R.id.btn8).setOnClickListener(this);
+        findViewById(R.id.btn9).setOnClickListener(this);
+        findViewById(R.id.btn_div).setOnClickListener(this);
+        findViewById(R.id.btn_add).setOnClickListener(this);
+        findViewById(R.id.btn_mul).setOnClickListener(this);
+        findViewById(R.id.btn_equal).setOnClickListener(this);
+        findViewById(R.id.btn_point).setOnClickListener(this);
+        findViewById(R.id.btn_sub).setOnClickListener(this);
+        btn_clear = (Button) findViewById(R.id.btn_clear);
+        btn_clear.setOnClickListener(this);
+        btn_clear.setOnLongClickListener(new View.OnLongClickListener() {
+
+            @Override
+            public boolean onLongClick(View v) {
+                // flag_longClick = true;
+                tv_show.setText("");
+                str_show = new StringBuffer("");
+                flag_dot = true;
+                flag_num1 = false;
+                flag_minus = false;
+                str_oper = null;
+                return true;
+            }
+        });
+    }
+
+
+    //end for left side calculator
+
 
 
 
