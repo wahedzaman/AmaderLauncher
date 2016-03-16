@@ -35,40 +35,40 @@ android:orientation="vertical">
                 android:layout_width="match_parent"
                 android:layout_height="fill_parent"
                 android:orientation="horizontal">
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp1"/>
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp2"/>
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp3"/>
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp4"/>
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp5"/>
 
             </LinearLayout>
@@ -80,40 +80,40 @@ android:orientation="vertical">
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:orientation="horizontal">
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp6"/>
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp7"/>
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp8"/>
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp9"/>
-                <ImageButton
+                <ImageView
                     android:src="@drawable/defaultaddicon"
                     android:background="@null"
                     android:layout_weight="1"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
                     android:id="@+id/bottomDrawerApp10"/>
 
             </LinearLayout>

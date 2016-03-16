@@ -3,7 +3,9 @@ package com.durbinsoft.amarlauncher;
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
+import android.app.AlarmManager;
 import android.app.AlertDialog;
+import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.bluetooth.BluetoothAdapter;
 import android.content.BroadcastReceiver;
@@ -17,18 +19,20 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
+import android.os.BatteryManager;
 import android.os.Bundle;
-import android.os.Vibrator;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.util.DisplayMetrics;
+import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
-import android.widget.CalendarView;
 import android.widget.GridView;
 import android.widget.ImageButton;
 import android.widget.ImageView;
@@ -39,6 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import java.math.BigDecimal;
+import java.util.Calendar;
 
 
 public class AppDrawerActivity extends Activity implements View.OnClickListener{
@@ -48,8 +53,10 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     AppDrawerClickListener appDrawerClickListener;
 
     GridView appDrawerView, newAppGrid, googleAppGrid;
-    LinearLayout appTrayView, slideDrawerView, mainHomeView, bottomDrawerView, appdrawerLongpressDetails, rightSideDrawerView;
-    ImageButton appDrawerHomeButton, appDrawerBuuton1,appDrawerBuuton2,appDrawerBuuton3,appDrawerBuuton4,bottomDrawerbutton1,bottomDrawerbutton2,bottomDrawerbutton3,bottomDrawerbutton4,bottomDrawerbutton5,bottomDrawerbutton6,bottomDrawerbutton7,bottomDrawerbutton8,bottomDrawerbutton9,bottomDrawerbutton10;
+    LinearLayout appTrayView, slideDrawerView, mainHomeView, bottomDrawerView, appdrawerLongpressDetails, rightSideDrawerView,homeClockContainer;
+    ImageView appDrawerHomeButton, appDrawerBuuton1,appDrawerBuuton2,appDrawerBuuton3,appDrawerBuuton4,bottomDrawerbutton1,bottomDrawerbutton2,bottomDrawerbutton3,bottomDrawerbutton4,bottomDrawerbutton5,bottomDrawerbutton6,bottomDrawerbutton7,bottomDrawerbutton8,bottomDrawerbutton9,bottomDrawerbutton10;
+
+
 
     private boolean isAppDrawerVisible = false;
     private boolean isAppTrayVisible = false;
@@ -76,6 +83,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     //these textview below, acts like button
     private TextView appDeleteTv,appLockTv,appHideTv;
+
+    //text view for the home clock widget
+    private TextView homeClockM,homeClockH,homeClockAP, homeClockExtra;
 
     private PreferenceClassForData sPrefs;
 
@@ -105,12 +115,16 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private boolean flag_minus = false;
     //end for left side calculator
 
+    private String batteryLevel;
+
 
 
     private static final int ADMIN_INTENT = 15;
     private static final String description = "Please provide proper permission to lock the phone on double tap";
     private DevicePolicyManager mDevicePolicyManager;
     private ComponentName mComponentName;
+
+    HomeClockUpdateHandler hclock;
 
 
 
@@ -148,8 +162,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     }
 
 
-
-
     @Override
     protected void onResume() {
 
@@ -167,6 +179,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             setBottomDrawerApps();
             justStarted = false;
         }
+
+        hclock.updateHomeClockTime();
     }
 
     public void initiateView()
@@ -184,30 +198,37 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         leftDrawerNameText = (TextView) findViewById(R.id.leftDrawerNameText);
 
 
+        homeClockH = (TextView) findViewById(R.id.homeClockH);
+        homeClockM = (TextView) findViewById(R.id.homeClockM);
+        homeClockAP = (TextView) findViewById(R.id.homeClockAP);
+        homeClockExtra = (TextView) findViewById(R.id.homeClockExtra);
+        homeClockContainer =(LinearLayout)findViewById(R.id.homeClockContainer);
+
+
         appDeleteTv = (TextView) findViewById(R.id.appUnistalltv);
         appLockTv = (TextView) findViewById(R.id.appLockTv);
         // appHideTv = (TextView) findViewById(R.id.appHidetv);
 
 
-        appDrawerBuuton1 = (ImageButton) findViewById(R.id.appDrawerButton1);
-        appDrawerBuuton2 = (ImageButton) findViewById(R.id.appDrawerButton2);
-        appDrawerBuuton3 = (ImageButton) findViewById(R.id.appDrawerButton3);
-        appDrawerBuuton4 = (ImageButton) findViewById(R.id.appDrawerButton4);
+        appDrawerBuuton1 = (ImageView) findViewById(R.id.appDrawerButton1);
+        appDrawerBuuton2 = (ImageView) findViewById(R.id.appDrawerButton2);
+        appDrawerBuuton3 = (ImageView) findViewById(R.id.appDrawerButton3);
+        appDrawerBuuton4 = (ImageView) findViewById(R.id.appDrawerButton4);
 
-        bottomDrawerbutton1 = (ImageButton)findViewById(R.id.bottomDrawerApp1);
-        bottomDrawerbutton2 = (ImageButton)findViewById(R.id.bottomDrawerApp2);
-        bottomDrawerbutton3 = (ImageButton)findViewById(R.id.bottomDrawerApp3);
-        bottomDrawerbutton4 = (ImageButton)findViewById(R.id.bottomDrawerApp4);
-        bottomDrawerbutton5 = (ImageButton)findViewById(R.id.bottomDrawerApp5);
-        bottomDrawerbutton6 = (ImageButton)findViewById(R.id.bottomDrawerApp6);
-        bottomDrawerbutton7 = (ImageButton)findViewById(R.id.bottomDrawerApp7);
-        bottomDrawerbutton8 = (ImageButton)findViewById(R.id.bottomDrawerApp8);
-        bottomDrawerbutton9 = (ImageButton)findViewById(R.id.bottomDrawerApp9);
-        bottomDrawerbutton10 = (ImageButton)findViewById(R.id.bottomDrawerApp10);
+        bottomDrawerbutton1 = (ImageView)findViewById(R.id.bottomDrawerApp1);
+        bottomDrawerbutton2 = (ImageView)findViewById(R.id.bottomDrawerApp2);
+        bottomDrawerbutton3 = (ImageView)findViewById(R.id.bottomDrawerApp3);
+        bottomDrawerbutton4 = (ImageView)findViewById(R.id.bottomDrawerApp4);
+        bottomDrawerbutton5 = (ImageView)findViewById(R.id.bottomDrawerApp5);
+        bottomDrawerbutton6 = (ImageView)findViewById(R.id.bottomDrawerApp6);
+        bottomDrawerbutton7 = (ImageView)findViewById(R.id.bottomDrawerApp7);
+        bottomDrawerbutton8 = (ImageView)findViewById(R.id.bottomDrawerApp8);
+        bottomDrawerbutton9 = (ImageView)findViewById(R.id.bottomDrawerApp9);
+        bottomDrawerbutton10 = (ImageView)findViewById(R.id.bottomDrawerApp10);
 
         brightnessBar = (SeekBar) findViewById(R.id.bottomDrawerAppBrightnessSlider);
 
-        appDrawerHomeButton = (ImageButton) findViewById(R.id.homeButtonAppDrawer);
+        appDrawerHomeButton = (ImageView) findViewById(R.id.homeButtonAppDrawer);
 
         bottomDrawerView = (LinearLayout) findViewById(R.id.bottomDrawerViewHolder);
         mainHomeView = (LinearLayout) findViewById(R.id.mainHomeView);
@@ -220,6 +241,18 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         appDrawerView = (GridView) findViewById(R.id.appDrawerGridView);
         newAppGrid = (GridView) findViewById(R.id.newappDrawerGridView);
         googleAppGrid = (GridView) findViewById(R.id.googleappDrawerGridView);
+
+        myCalenderConversion = new CalenderConversion();
+        hclock = new HomeClockUpdateHandler(homeClockM,homeClockH,homeClockAP,homeClockExtra,myCalenderConversion,this);
+
+        Calendar cal = Calendar.getInstance();
+
+        Intent intent = new Intent(this, TimerService.class);
+        PendingIntent pintent = PendingIntent.getService(this, 0, intent, 0);
+
+        AlarmManager alarm = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+// schedule for every 30 seconds
+        alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 5000, pintent);
 
     }
 
@@ -239,7 +272,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         packages = new ApplicationPackage(this);
         packages.initializePackages();
 
-        myCalenderConversion = new CalenderConversion();
+
 
         customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
 
@@ -257,6 +290,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         appDrawerView.setOnItemClickListener(new AppDrawerClickListener(this, packages,sPrefs));
         appDrawerView.setOnItemLongClickListener(appDrawerClickListener);
+
+
 
         //Drawable d = getResources().getDrawable(R.drawable.blueblurbg);
         //  d.setAlpha(200);
@@ -357,7 +392,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
             public void onLongPressDown(){
                 appDrawerClickListener.hapticVibreationFeedback();
-                Toast.makeText(getApplicationContext(),"long pressed",Toast.LENGTH_SHORT).show();
+                Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
+                startActivity(Intent.createChooser(intent, "Select Wallpaper"));
             }
 
         });
@@ -380,12 +416,24 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         });
         appDrawerHomeButton.setOnTouchListener(new OnSwipeTouchListener(this) {
 
+            public void onDownPressed(){
+               // Bitmap tmpImg = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.d_home);
+               // Drawable ico = new BitmapDrawable(getApplicationContext().getResources(),tmpImg);
+                //appDrawerHomeButton.setImageDrawable(ico);
+            }
+
             public void onSingleTap() {
+                //Bitmap tmpImg = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.home);
+                //Drawable ico = new BitmapDrawable(getApplicationContext().getResources(),tmpImg);
+                //appDrawerHomeButton.setImageDrawable(ico);
                 appDrawerClickListener.resetVisibilityAndOther();
                 homeClicked();
             }
 
             public void onSwipeTop() {
+                //Bitmap tmpImg = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.home);
+                //Drawable ico = new BitmapDrawable(getApplicationContext().getResources(),tmpImg);
+                //appDrawerHomeButton.setImageDrawable(ico);
                 getBottomDrawerInView();
             }
 
@@ -597,14 +645,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         });
 
-        //below is registering our BroadcastReceiver to check any new package install or uninstall
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
-        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        filter.addDataScheme("package");
-        registerReceiver(new PackageChangeBroadCastListener(), filter);
-
         brightnessBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int seekBarProgress = 0;
 
@@ -622,10 +662,20 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
         });
+
+        //below is registering our BroadcastReceiver to check any new package install or uninstall
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        //filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addDataScheme("package");
+        registerReceiver(new PackageChangeBroadCastListener(), filter);
+
+        this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
 
 
-    private void setChangedApplicationToButton(ImageButton imageButton, String packageName, String appPositionName){ // stage reffers to the button of favourite button or appbar button. 0 or 1
+    private void setChangedApplicationToButton(ImageView imageButton, String packageName, String appPositionName){ // stage reffers to the button of favourite button or appbar button. 0 or 1
         //update sharedpreferences, update icon, update packageName link
         imageButton.setImageDrawable(packages.getIcon(packages.searchAndReturnPackage(packageName)));
         sPrefs.setApps(packageName,appPositionName);
@@ -748,12 +798,14 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             leftDrawerClockTimeText.setText(myCalenderConversion.returnConvertedTime());
             leftDrawerClockDateText.setText(myCalenderConversion.retunConvertedDate());
             mainHomeView.animate().translationX(slideDrawerView.getWidth());
+            homeClockContainer.animate().translationX(slideDrawerView.getWidth());
             slideDrawerView.setVisibility(View.VISIBLE);
             slideDrawerView.setAlpha(0.0f);
             slideDrawerView.animate().translationX(widthPixels).alpha(1.0f);
             isAppTrayVisible = true;
         }else{
             mainHomeView.animate().translationX(0);
+            homeClockContainer.animate().translationX(0);
             slideDrawerView.animate().translationX(-slideDrawerView.getWidth()).alpha(0.0f).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(Animator animation) {
@@ -843,7 +895,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    private void getApplicationListForBottomDrawer(final ImageButton appDrawerBuuton, final String SP_APP){
+    private void getApplicationListForBottomDrawer(final ImageView appDrawerBuuton, final String SP_APP){
         AlertDialog.Builder builderSingle = new AlertDialog.Builder(this);
         builderSingle.setTitle("Select Application");
 
@@ -1297,8 +1349,14 @@ private void setNum1(String oper) {
 
     //end for left side calculator
 
-
-
+    private BroadcastReceiver mBatInfoReceiver = new BroadcastReceiver(){
+        @Override
+        public void onReceive(Context ctxt, Intent intent) {
+            int level = intent.getIntExtra(BatteryManager.EXTRA_LEVEL, 0);
+            batteryLevel = String.valueOf(level) + "%";
+            hclock.setBatteryLevel(batteryLevel);
+        }
+    };
 
 public class PackageChangeBroadCastListener extends BroadcastReceiver{
 
@@ -1312,9 +1370,22 @@ public class PackageChangeBroadCastListener extends BroadcastReceiver{
             appDrawerView.setAdapter(customDrawerAdapter);
             appDrawerView.setOnItemClickListener(new AppDrawerClickListener(getApplicationContext(), packages));
             */
+
+           // String packageName=intent.getData().getEncodedSchemeSpecificPart();
+          //  if(){}
+          //  sPrefs.setApps(packageName,"null");
+
+            Log.d("test", "broadcast..");
+
+
             setAllAdapterAndEverything();
-            sPrefs.setChangeMadeBool(true);
+            setBottomDrawerApps();
+
+            //this is not needed at all. because we are doint this all here...
+            //sPrefs.setChangeMadeBool(true);
         }
     }
 
 }
+
+

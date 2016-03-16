@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:gravity="center_horizontal|center_vertical"
+        android:gravity="center_horizontal|center_vertical|bottom"
         android:layout_weight="14"
         android:orientation="horizontal" >
 
@@ -10,51 +10,50 @@
         <LinearLayout
             android:id="@+id/appTrayHolder"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:gravity="center_horizontal|center_vertical|bottom"
+            android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginBottom="5dp"
             android:orientation="horizontal" >
-            <ImageButton
 
-                android:layout_weight="1"
-                android:background="@null"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:id="@+id/appDrawerButton1"
-                android:src="@drawable/dialer" />
+                <ImageView
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/appDrawerButton1"
+                    android:src="@drawable/phone" />
 
-            <ImageButton
-                android:layout_weight="1"
-                android:background="@null"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:id="@+id/appDrawerButton2"
-                android:src="@drawable/message" />
-            <ImageButton
-                android:id="@+id/homeButtonAppDrawer"
-                android:layout_weight="1"
-                android:background="@null"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:src="@drawable/hicon" />
+                <ImageView
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/appDrawerButton2"
+                    android:src="@drawable/messaging" />
 
-            <ImageButton
-                android:layout_weight="1"
-                android:background="@null"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:id="@+id/appDrawerButton3"
-                android:src="@drawable/chrome" />
+                <ImageView
+                    android:id="@+id/homeButtonAppDrawer"
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:src="@drawable/home" />
+                <ImageView
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/appDrawerButton3"
+                    android:src="@drawable/browser" />
 
-            <ImageButton
+                <ImageView
+                    android:layout_weight="1"
+                    android:background="@null"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:id="@+id/appDrawerButton4"
+                    android:src="@drawable/cameras" />
 
-                android:layout_weight="1"
-                android:background="@null"
-                android:layout_width="48dp"
-                android:layout_height="48dp"
-                android:id="@+id/appDrawerButton4"
-                android:src="@drawable/camera" />
         </LinearLayout>
 
     </LinearLayout>

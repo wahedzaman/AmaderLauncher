@@ -46,6 +46,8 @@ public class ApplicationPackage {
 
     PackageManager packageManager;
 
+    ThemeManager themeManager;
+
     public ApplicationPackage(){}
 
     public ApplicationPackage(Context c) {
@@ -54,6 +56,7 @@ public class ApplicationPackage {
     }
 
     public void initializePackages() {
+        themeManager = new ThemeManager(mContext);
         final Intent myIntent = new Intent(Intent.ACTION_MAIN, null);
         myIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> packageList = packageManager.queryIntentActivities(
@@ -63,12 +66,19 @@ public class ApplicationPackage {
         icon = new Drawable[size];
         packageName = new String[size];
         appLabel = new String[size];
+        int index;
 
         for (int i = 0; i < size; i++) {
-            icon[i] = packageList.get(i).loadIcon(packageManager);
             packageName[i] = packageList.get(i).activityInfo.packageName;
             appLabel[i] = packageList.get(i).loadLabel(packageManager)
                     .toString();
+            index = themeManager.getThemeIconIndex(appLabel[i]);
+            if(index == -1){
+                //icon[i] = packageList.get(i).loadIcon(packageManager);
+                icon[i] = themeManager.createNewThemeIcon(packageList.get(i).loadIcon(packageManager));
+            }else {
+                icon[i] = themeManager.getThemeIcon(index);
+            }
         }
 
         sortApps();

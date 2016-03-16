@@ -1,5 +1,6 @@
 package com.durbinsoft.amarlauncher;
 
+import android.content.Context;
 import android.os.Debug;
 import android.util.Log;
 
@@ -37,6 +38,12 @@ public class CalenderConversion {
 
     private String rawTimeData,rawDateData,rawDayData;
 
+    private String homeCalTimeH;
+    private String homeCalTimeM;
+    private String homeExtraDetails;
+
+    private String ampm;
+
 
     private void returnConvertedCal(){
         checkCurrentTimeStatus();
@@ -49,6 +56,76 @@ public class CalenderConversion {
         monthConverted = convertMonth(rawDateData.substring(3,5));
         todayActual[0] = timeConverted;
         todayActual[1] = dayConverted+","+monthConverted+","+dateConverted;
+    }
+
+    private void processConvertedCalForHome(){
+        checkCurrentTimeStatus();
+        formatTime12();
+
+        homeCalTimeH = rawTimeData.substring(0, 2);
+        homeCalTimeM = rawTimeData.substring(3, 5);
+
+        homeExtraDetails = rawDayData.substring(0,3);
+        homeExtraDetails += "\n"+ convertMonthOri(rawDateData.substring(3, 5));
+        homeExtraDetails += ", "+ rawDateData.substring(0,2);
+        homeExtraDetails += "\n";
+
+    }
+
+    public String getAmpm(){
+        String timeParsed = rawTimeData.substring(0,5);
+        int timeInHour = Integer.parseInt(rawTimeData.substring(0,2));
+        if(timeInHour>12){
+            ampm = "PM";
+        }else ampm = "AM";
+        return ampm;
+    }
+
+    private String convertMonthOri(String val){
+        String returnVal = "";
+        if(val.equals("01")){
+
+        }else if(val.equals("01")){
+            returnVal = "Jan";
+        }else if(val.equals("02")){
+            returnVal = "Feb";
+        }else if(val.equals("03")){
+            returnVal = "Mar";
+        }else if(val.equals("04")){
+            returnVal = "Apr";
+        }else if(val.equals("05")){
+            returnVal = "May";
+        }else if(val.equals("06")){
+            returnVal = "Jun";
+        }else if(val.equals("07")){
+            returnVal = "Jul";
+        }else if(val.equals("08")){
+            returnVal = "Aug";
+        }else if(val.equals("09")){
+            returnVal = "Sep";
+        }else if(val.equals("10")){
+            returnVal = "Oct";
+        }else if(val.equals("11")){
+            returnVal = "Nov";
+        }else if(val.equals("12")){
+            returnVal = "Dec";
+        }
+
+        return  returnVal;
+    }
+
+    public String returnHomeCalTimeH(){
+
+        return homeCalTimeH;
+    }
+
+    public String returnHomeCalM(){
+        processConvertedCalForHome();
+        return  homeCalTimeM;
+    }
+
+    public String returnHomeExtra(){
+        return homeExtraDetails;
     }
 
     public String returnConvertedTime(){
@@ -162,6 +239,7 @@ public class CalenderConversion {
         int timeInHour = Integer.parseInt(rawTimeData.substring(0,2));
         if(timeInHour == 00){
             timeParsed = "12";
+            ampm = "AM";
         }else if(timeInHour>12){
             timeInHour = timeInHour-12;
             if(10-timeInHour>0){
@@ -169,6 +247,7 @@ public class CalenderConversion {
             }else{
                 timeParsed = ""+ timeInHour;
             }
+            ampm = "PM";
         }
         String tempVal = timeParsed + rawTimeData.substring(2);
         rawTimeData = tempVal;

@@ -131,6 +131,7 @@ public class PreferenceClassForData {
             initLockedApps();
         }
     }
+
     public String getSelectedApp(int x){
         initializeSharedPrefs();
         String  val = "nu";
@@ -241,6 +242,13 @@ public class PreferenceClassForData {
 
     public void setApps(String ap1,String appPositionPrefsName){
         spHeader();
+        if(appPositionPrefsName.equals("null")){
+            for(int i=0;i<10;i++){
+                if(getSelectedApp(i).equals(ap1)){
+                    appPositionPrefsName = "SP_APP"+(5+i);
+                }
+            }
+        }
         editor.putString(appPositionPrefsName, ap1);
         spFooter();
     }
@@ -262,33 +270,6 @@ public class PreferenceClassForData {
     }
     private void spFooter(){
         editor.commit();
-    }
-
-    public void setLockedApps(String appPackName){
-        String prefsName;
-        spHeader();
-        if(appPackName.equals("com.durbinsoft.amarlauncher")){
-            prefsName = "Locked"+ lockAppsConter;
-        }else{
-            lockAppsConter ++;
-            prefsName = "Locked"+ lockAppsConter;
-            Toast.makeText(mContext,"Application Locked!",Toast.LENGTH_SHORT).show();
-        }
-        editor.putString(prefsName, appPackName);
-        editor.putInt(SP_LCOUNTER, lockAppsConter);
-        spFooter();
-    }
-
-    public boolean checkAppPackLockStat(String appPackName){
-        boolean boolStatus = false;
-        for(int i=0; i<lockAppsConter;i++){
-            if(lockedApps.get(i).equals(appPackName)){
-               boolStatus = true;
-                break;
-            }
-        }
-
-        return boolStatus;
     }
 
     public int getLockAppsConter() {
@@ -333,7 +314,7 @@ public class PreferenceClassForData {
     }
 
     public void toggleAppLock(String appPackNames){
-        //Toast.makeText(mContext,"Ap name: "+ appPackNames,Toast.LENGTH_SHORT).show();
+        Toast.makeText(mContext,"Ap name: "+ appPackNames,Toast.LENGTH_SHORT).show();
         boolean res = checkAppPackLockStat(appPackNames);
         if(res){
             removeLockedApp(appPackNames);
@@ -343,4 +324,30 @@ public class PreferenceClassForData {
         initializeSharedPrefs();
     }
 
+    public void setLockedApps(String appPackName){
+        String prefsName;
+        spHeader();
+        if(appPackName.equals("com.durbinsoft.amarlauncher")){
+            prefsName = "Locked"+ lockAppsConter;
+        }else{
+            lockAppsConter ++;
+            prefsName = "Locked"+ lockAppsConter;
+            Toast.makeText(mContext,"Application Locked!",Toast.LENGTH_SHORT).show();
+        }
+        editor.putString(prefsName, appPackName);
+        editor.putInt(SP_LCOUNTER, lockAppsConter);
+        spFooter();
+    }
+
+    public boolean checkAppPackLockStat(String appPackName){
+        boolean boolStatus = false;
+        for(int i=0; i<lockAppsConter;i++){
+            if(lockedApps.get(i).equals(appPackName)){
+                boolStatus = true;
+                break;
+            }
+        }
+
+        return boolStatus;
+    }
 }
