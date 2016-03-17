@@ -8,6 +8,7 @@ import android.app.AlertDialog;
 import android.app.PendingIntent;
 import android.app.admin.DevicePolicyManager;
 import android.bluetooth.BluetoothAdapter;
+import android.content.ActivityNotFoundException;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.ContentResolver;
@@ -243,6 +244,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         googleAppGrid = (GridView) findViewById(R.id.googleappDrawerGridView);
 
         myCalenderConversion = new CalenderConversion();
+        Typeface custom_font = Typeface.createFromAsset(getAssets(), "fonts/customfont2.ttf");
+
+        homeClockM.setTypeface(custom_font);
+        homeClockH.setTypeface(custom_font);
+        homeClockExtra.setTypeface(custom_font);
         hclock = new HomeClockUpdateHandler(homeClockM,homeClockH,homeClockAP,homeClockExtra,myCalenderConversion,this);
 
         Calendar cal = Calendar.getInstance();
@@ -791,7 +797,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             ScrollView sv = (ScrollView)findViewById(R.id.scrl);
             sv.scrollTo(sv.getBottom(), 0);
 
-            Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/customfont.ttf");
+            Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/customfont2.ttf");
 
             leftDrawerNameText.setTypeface(custom_font);
            // sv.fullScroll(View.FOCUS_UP);
@@ -1121,10 +1127,27 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                     tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.airplaneblack);
                 }else{
                     airplaneState = true;
-                    tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.airplanewhite);
+                   // tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.airplanewhite);
+                     tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.airplaneblack);
+                }
+                if (android.os.Build.VERSION.SDK_INT < 17){
+                    try{
+                        Intent intentAirplaneMode = new Intent(Settings.ACTION_AIRPLANE_MODE_SETTINGS);
+                        intentAirplaneMode.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                        startActivity(intentAirplaneMode);
+                    }
+                    catch (ActivityNotFoundException e){
+                        Log.e("exception", e + "");
+                    }
+                }
+                else{
+                    Intent intent1 = new Intent("android.settings.WIRELESS_SETTINGS");
+                   // Intent intent1 = new Intent("android.settings.AirplaneModeSettings");
+                    intent1.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK); startActivity(intent1);
                 }
                 airplaneToggle.setImageBitmap(tmpImg);
                 changeAireplaneState(airplaneState);
+                getBottomDrawerInView();
                 break;
             case R.id.wifiToggle:
                 if(wifiState){

@@ -65,10 +65,10 @@ public class CalenderConversion {
         homeCalTimeH = rawTimeData.substring(0, 2);
         homeCalTimeM = rawTimeData.substring(3, 5);
 
-        homeExtraDetails = rawDayData.substring(0,3);
-        homeExtraDetails += "\n"+ convertMonthOri(rawDateData.substring(3, 5));
-        homeExtraDetails += ", "+ rawDateData.substring(0,2);
-        homeExtraDetails += "\n";
+        homeExtraDetails = " "+rawDayData.substring(0,3);
+        homeExtraDetails += "\n "+ convertMonthOri(rawDateData.substring(3, 5));
+        homeExtraDetails += ","+ rawDateData.substring(0,2);
+        homeExtraDetails += "\n ";
 
     }
 
@@ -83,9 +83,7 @@ public class CalenderConversion {
 
     private String convertMonthOri(String val){
         String returnVal = "";
-        if(val.equals("01")){
-
-        }else if(val.equals("01")){
+         if(val.equals("01")){
             returnVal = "Jan";
         }else if(val.equals("02")){
             returnVal = "Feb";
@@ -157,8 +155,6 @@ public class CalenderConversion {
     private String convertMonth(String val){
         String returnVal = "";
         if(val.equals("01")){
-
-        }else if(val.equals("01")){
             returnVal = month_in_bangla [0];
         }else if(val.equals("02")){
             returnVal = month_in_bangla [1];
@@ -257,7 +253,7 @@ public class CalenderConversion {
         rawDateData = new SimpleDateFormat("dd/MM/yyyy").format(Calendar.getInstance().getTime());
         rawTimeData = new SimpleDateFormat("HH:mm:ss").format(Calendar.getInstance().getTime());
         rawDayData = new SimpleDateFormat("EEEE", Locale.US).format(Calendar.getInstance().getTime());
-        rawTimeData = rawTimeData.substring(0,5);
+        rawTimeData = rawTimeData.substring(0, 5);
     }
 
 }

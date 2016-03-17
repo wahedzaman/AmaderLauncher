@@ -27,6 +27,7 @@
         android:layout_weight="1.5">
 
         <LinearLayout
+            android:layout_marginTop="10dp"
             android:layout_marginRight="5dp"
             android:layout_width="fill_parent"
             android:layout_height="match_parent"
@@ -73,14 +74,14 @@
             android:orientation="vertical">
             <TextView
                 android:id="@+id/homeClockExtra"
-                android:layout_marginLeft="10dp"
+                android:paddingLeft="10dp"
                 android:layout_weight="1"
                 android:textColor="#ffffff"
                 android:gravity="top"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:text="Thu. 6\nMar\n86%"
-                android:textSize="30dp"/>
+                android:textSize="20dp"/>
 
 
         </LinearLayout>

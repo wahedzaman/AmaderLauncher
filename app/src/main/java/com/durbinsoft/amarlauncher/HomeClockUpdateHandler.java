@@ -1,6 +1,7 @@
 package com.durbinsoft.amarlauncher;
 
 import android.content.Context;
+import android.graphics.Typeface;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -35,7 +36,7 @@ public class HomeClockUpdateHandler {
         if(batteryLevel== null){
             batteryLevel = "...";
         }
-        homeClockExtra.setText(myCalenderConversion.returnHomeExtra()+batteryLevel);
+        homeClockExtra.setText(myCalenderConversion.returnHomeExtra()+" "+batteryLevel);
     }
 
     public boolean isInitialized(){
