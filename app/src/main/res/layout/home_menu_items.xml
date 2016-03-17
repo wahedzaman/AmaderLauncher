@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:background="@color/menu_black_transparent"
+    android:gravity="center_horizontal|center_vertical|bottom">
+
+    <LinearLayout
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal">
+        
+        <LinearLayout
+           android:gravity="center_vertical|center_horizontal"
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:background="@null"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:src="@drawable/menuitem_wallpaper"/>
+            <TextView
+                android:textColor="@android:color/white"
+                android:layout_weight="6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center|top"
+                android:text="Wallpaper"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:background="@null"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:src="@drawable/menuitem_preference"/>
+            <TextView
+                android:textColor="@android:color/white"
+                android:layout_weight="6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center|top"
+                android:text="Preferences"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:background="@null"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:src="@drawable/menuitem_syssetting"/>
+            <TextView
+                android:textColor="@android:color/white"
+                android:layout_weight="6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center|top"
+                android:text="Settings"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:gravity="center_vertical|center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        android:orientation="horizontal">
+
+        <LinearLayout
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:background="@null"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:src="@drawable/menuitem_starus"/>
+            <TextView
+                android:textColor="@android:color/white"
+                android:layout_weight="6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center|top"
+                android:text="Give us 5 Star"/>
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:background="@null"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:src="@drawable/menuitem_feedback"/>
+            <TextView
+                android:textColor="@android:color/white"
+                android:layout_weight="6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center|top"
+                android:text="Feedback"/>
+
+        </LinearLayout>
+        <LinearLayout
+            android:gravity="center_vertical|center_horizontal"
+            android:layout_width="50dp"
+            android:layout_height="100dp"
+            android:layout_weight="1"
+            android:orientation="vertical">
+
+            <ImageView
+                android:background="@null"
+                android:layout_width="70dp"
+                android:layout_height="70dp"
+                android:layout_weight="1"
+                android:src="@drawable/menuitem_theme"/>
+            <TextView
+                android:textColor="@android:color/white"
+                android:layout_weight="6"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:gravity="center|top"
+                android:text="Theme"/>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+
+</LinearLayout>

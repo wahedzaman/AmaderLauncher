@@ -14,5 +14,7 @@
 
     <include layout="@layout/appdrawer_longpress_details"/>
 
+    <include layout="@layout/home_menu_items"/>
+
 
 </FrameLayout>

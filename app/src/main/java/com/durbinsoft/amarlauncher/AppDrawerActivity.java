@@ -20,8 +20,6 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
@@ -35,7 +33,6 @@ import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
-import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
@@ -121,7 +118,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
 
     private static final int ADMIN_INTENT = 15;
-    private static final String description = "Please provide proper permission to lock the phone on double tap";
+    private static final String description = "Please Confirm/Accept the Permission to lock your phone on double tap";
     private DevicePolicyManager mDevicePolicyManager;
     private ComponentName mComponentName;
 
