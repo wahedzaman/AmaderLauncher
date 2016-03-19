@@ -40,6 +40,9 @@ import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daimajia.androidanimations.library.Techniques;
+import com.daimajia.androidanimations.library.YoYo;
+
 import java.math.BigDecimal;
 import java.util.Calendar;
 
@@ -124,6 +127,10 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     HomeClockUpdateHandler hclock;
 
+    //this int value is required to handle any changed package (uninstalled/ removed_) otherwise get AN ERROR
+
+    int packReturnVal = -1;
+
 
 
     @Override
@@ -140,10 +147,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         justStarted = true;
 
-
         initiateView();
         setAllAdapterAndEverything();
-
+        initiateAppRelatedAdaptersAndClass();
 
         if(initialSetup){
             Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
@@ -157,6 +163,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             Intent i = new Intent(this,AppChooserApplication.class);
             startActivity(i);
         }
+
+        setBottomDrawerApps();
+
+      // isBottomDrawerVisible = true;
+       // bottomDrawerToggleWithAnim();
     }
 
 
@@ -171,6 +182,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         if((initialSetup == false)&&(isAnyChangeMade)){
             setBottomDrawerApps();
             setAllAdapterAndEverything();
+            initiateAppRelatedAdaptersAndClass();
             isAnyChangeMade = false;
             sPrefs.setChangeMadeBool(isAnyChangeMade);
         }else if(justStarted){
@@ -257,6 +269,16 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 // schedule for every 30 seconds
         alarm.setRepeating(AlarmManager.RTC_WAKEUP, cal.getTimeInMillis(), 5000, pintent);
 
+        //below is registering our BroadcastReceiver to check any new package install or uninstall
+        IntentFilter filter = new IntentFilter();
+        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
+        //filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
+        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
+        filter.addDataScheme("package");
+        registerReceiver(new PackageChangeBroadCastListener(), filter);
+
+        this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
     }
 
     public void setAllAdapterAndEverything(){
@@ -272,29 +294,13 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         sPrefs.initializeSharedPrefs();
         initialSetup = sPrefs.getBool();
 
-        packages = new ApplicationPackage(this);
-        packages.initializePackages();
 
-
-
-        customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
 
         airplaneToggle.setOnClickListener(this);
         wifiToggle.setOnClickListener(this);
         bluetoothToggle.setOnClickListener(this);
         rotationToggle.setOnClickListener(this);
         lightToggle.setOnClickListener(this);
-
-
-        appDrawerView.setAdapter(customDrawerAdapter);
-
-        appDrawerView.setTextFilterEnabled(true);
-        appDrawerClickListener = new AppDrawerClickListener(this, packages,appdrawerLongpressDetails,appDrawerView,sPrefs);
-
-        appDrawerView.setOnItemClickListener(new AppDrawerClickListener(this, packages,sPrefs));
-        appDrawerView.setOnItemLongClickListener(appDrawerClickListener);
-
-
 
         //Drawable d = getResources().getDrawable(R.drawable.blueblurbg);
         //  d.setAlpha(200);
@@ -303,9 +309,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         //  Bitmap tmpImg = BitmapFactory.decodeResource(getResources(),R.drawable.bluetoothblack);
         //   BitmapDrawable draw = new BitmapDrawable(Bitmap.createScaledBitmap(tmpImg, 16, 16, false));
         //   airplaneToggleButton.setBackground(draw);
-
-
-
 
 
         if(isBottomDrawerVisible){
@@ -358,12 +361,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 */
 
 
-        //below are the code to handle swipe gestures...
+        //below are the code to handle swipe gestures on home screen free space
 
         mainHomeView.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onSwipeTop() {
-                checkSystemStatus();
-                getBottomDrawerInView();
+                bottomDrawerToggleWithAnim();
             }
 
             public void onSwipeRight() {
@@ -403,7 +405,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         bottomDrawerView.setOnTouchListener(new OnSwipeTouchListener(this) {
 
             public void onSwipeBottom() {
-                getBottomDrawerInView();
+                bottomDrawerToggleWithAnim();
             }
 
 
@@ -437,7 +439,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 //Bitmap tmpImg = BitmapFactory.decodeResource(getApplicationContext().getResources(), R.drawable.home);
                 //Drawable ico = new BitmapDrawable(getApplicationContext().getResources(),tmpImg);
                 //appDrawerHomeButton.setImageDrawable(ico);
-                getBottomDrawerInView();
+                bottomDrawerToggleWithAnim();
+
             }
 
         });
@@ -452,7 +455,14 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(1));
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(1));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(1));
+                }
                 startActivity(launchIntent);
             }
 
@@ -474,7 +484,14 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
 
             public void onSingleTap() {
-                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(2));
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(2));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(2));
+                }
                 startActivity(launchIntent);
             }
 
@@ -491,7 +508,14 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
 
             public void onSingleTap() {
-                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(3));
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(3));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(3));
+                }
                 startActivity(launchIntent);
             }
 
@@ -507,7 +531,14 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                Intent  launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(4));
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(4));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(4));
+                }
                 startActivity(launchIntent);
             }
 
@@ -517,6 +548,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         //bottom drawer favourite app click listener
         //add a check if it is initialize or not.
 
+
+
         bottomDrawerbutton1.setOnTouchListener(new OnSwipeTouchListener(this) {
             public void onLongPressDown() {
                 appDrawerClickListener.hapticVibreationFeedback();
@@ -524,8 +557,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(5));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(5));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(5));
+                }
                 startActivity(launchIntent);
             }
 
@@ -537,8 +577,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(6));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(6));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(6));
+                }
                 startActivity(launchIntent);
             }
 
@@ -550,8 +597,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(7));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(7));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(7));
+                }
                 startActivity(launchIntent);
             }
 
@@ -563,8 +617,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(8));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(8));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(8));
+                }
                 startActivity(launchIntent);
             }
 
@@ -576,8 +637,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(9));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(9));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(9));
+                }
                 startActivity(launchIntent);
             }
 
@@ -589,8 +657,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(10));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(10));
+                if(packReturnVal == -1){
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                }else{
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(10));
+                }
                 startActivity(launchIntent);
             }
 
@@ -602,8 +677,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(11));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(11));
+                if (packReturnVal == -1) {
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                } else {
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(11));
+                }
                 startActivity(launchIntent);
             }
 
@@ -615,8 +697,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(12));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(12));
+                if (packReturnVal == -1) {
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                } else {
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(12));
+                }
                 startActivity(launchIntent);
             }
 
@@ -628,8 +717,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(13));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(13));
+                if (packReturnVal == -1) {
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                } else {
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(13));
+                }
                 startActivity(launchIntent);
             }
 
@@ -641,8 +737,15 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
             public void onSingleTap() {
-                getBottomDrawerInView();
-                Intent launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(14));
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(14));
+                if (packReturnVal == -1) {
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                } else {
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(14));
+                }
                 startActivity(launchIntent);
             }
 
@@ -665,18 +768,49 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
         });
-
-        //below is registering our BroadcastReceiver to check any new package install or uninstall
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(Intent.ACTION_PACKAGE_ADDED);
-        //filter.addAction(Intent.ACTION_PACKAGE_CHANGED);
-        filter.addAction(Intent.ACTION_PACKAGE_REMOVED);
-        filter.addDataScheme("package");
-        registerReceiver(new PackageChangeBroadCastListener(), filter);
-
-        this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
     }
 
+    private void initiateAppRelatedAdaptersAndClass(){
+        packages = new ApplicationPackage(this);
+        packages.initializePackages();
+
+        customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);
+        appDrawerView.setAdapter(customDrawerAdapter);
+
+        appDrawerView.setTextFilterEnabled(true);
+        appDrawerClickListener = new AppDrawerClickListener(this, packages,appdrawerLongpressDetails,appDrawerView,sPrefs);
+
+        appDrawerView.setOnItemClickListener(new AppDrawerClickListener(this, packages, sPrefs));
+        appDrawerView.setOnItemLongClickListener(appDrawerClickListener);
+    }
+
+    private void appDrawerToggleWithAnim(){
+        appDrawerView.setVisibility(View.VISIBLE);
+        if (isAppDrawerVisible) {
+            YoYo.with(Techniques.ZoomOutDown).duration(600).playOn(appDrawerView);
+            isAppDrawerVisible = false;
+        }else{
+            YoYo.with(Techniques.ZoomInUp)
+                    .duration(600)
+                    .playOn(appDrawerView);
+            isAppDrawerVisible = true;
+        }
+    }
+
+    private void bottomDrawerToggleWithAnim(){
+        bottomDrawerView.setVisibility(View.VISIBLE);
+        if (isBottomDrawerVisible) {
+            YoYo.with(Techniques.FlipOutX).duration(250).playOn(bottomDrawerView);
+            isBottomDrawerVisible = false;
+            bottomDrawerView.setVisibility(View.INVISIBLE);// remove this and add listener and add this line when animation finifshed
+        }else{
+            YoYo.with(Techniques.FlipInX)
+                    .duration(400)
+                    .playOn(bottomDrawerView);
+            isBottomDrawerVisible = true;
+            checkSystemStatus();
+        }
+    }
 
     private void setChangedApplicationToButton(ImageView imageButton, String packageName, String appPositionName){ // stage reffers to the button of favourite button or appbar button. 0 or 1
         //update sharedpreferences, update icon, update packageName link
@@ -765,7 +899,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         if(appDrawerClickListener.getAppDetailsMenuVisibility()){
             appDrawerClickListener.getDetailsMenuInView();
         }else if(isBottomDrawerVisible){
-            getBottomDrawerInView();
+            bottomDrawerToggleWithAnim();
         }
          else if(isAppTrayVisible){
             getSliderDrawerInView();
@@ -779,10 +913,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     public void homeClicked(){
        if(appTrayFadeInOut){
            appDrawerClickListener.resetVisibilityAndOther();
-           animateFadeInOut();
+           appDrawerToggleWithAnim();
        }
         else if(appTraySlideInOUt){
-           animateSlideInOut();
+           appDrawerClickListener.resetVisibilityAndOther();
+           appDrawerToggleWithAnim();
        }
     }
 
@@ -827,7 +962,13 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             //  mainHomeView.animate().translationX(slideDrawerView.getWidth());
             bottomDrawerView.setVisibility(View.VISIBLE);
             bottomDrawerView.setAlpha(0.0f);
-            bottomDrawerView.animate().translationY(heightPixels).alpha(1.0f);
+            bottomDrawerView.animate().translationY(heightPixels).alpha(1.0f).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    checkSystemStatus();
+                }
+            });
             isBottomDrawerVisible = true;
         }else{
             //mainHomeView.animate().translationX(0);
@@ -1144,7 +1285,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 }
                 airplaneToggle.setImageBitmap(tmpImg);
                 changeAireplaneState(airplaneState);
-                getBottomDrawerInView();
+                bottomDrawerToggleWithAnim();
                 break;
             case R.id.wifiToggle:
                 if(wifiState){
@@ -1330,6 +1471,7 @@ private void setNum1(String oper) {
         tv_show.setText(str);
     }
 
+    //Initialize view and button for calculator at the left drawer
     private void initView() {
         tv_show = (TextView) findViewById(R.id.tv_show);
         findViewById(R.id.btn0).setOnClickListener(this);
@@ -1398,7 +1540,7 @@ public class PackageChangeBroadCastListener extends BroadcastReceiver{
             Log.d("test", "broadcast..");
 
 
-            setAllAdapterAndEverything();
+            initiateAppRelatedAdaptersAndClass();
             setBottomDrawerApps();
 
             //this is not needed at all. because we are doint this all here...
