@@ -1,6 +1,5 @@
 package com.durbinsoft.amarlauncher;
 
-import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -27,9 +26,11 @@ import android.os.BatteryManager;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.support.annotation.UiThread;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.GridView;
@@ -42,6 +43,7 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
+import com.nineoldandroids.animation.Animator;
 
 import java.math.BigDecimal;
 import java.util.Calendar;
@@ -132,6 +134,14 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     int packReturnVal = -1;
 
 
+    //LinearLayout for home screen long press menu
+    LinearLayout home_menu_item_mainbg,home_menu_wallpaper,home_menu_prefs,home_menu_settings,home_menu_starus,home_menu_feedback,home_menu_theme;
+    //boolean for home screen longpress menu
+    private boolean isMenuLongPressedVisible = false;
+
+
+    //end of long press menu items
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,6 +189,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         super.onResume();
         initialSetup = sPrefs.getBool();
         isAnyChangeMade = sPrefs.getAnyChangeMadeBool();
+
         if((initialSetup == false)&&(isAnyChangeMade)){
             setBottomDrawerApps();
             setAllAdapterAndEverything();
@@ -196,6 +207,16 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     public void initiateView()
     {
         initView();
+
+        //initiate menu item layouts
+        home_menu_item_mainbg = (LinearLayout)findViewById(R.id.home_menu_item_mainbg);
+        home_menu_wallpaper = (LinearLayout)findViewById(R.id.home_menu_wallpaper);
+        home_menu_prefs = (LinearLayout)findViewById(R.id.home_menu_prefs);
+        home_menu_settings = (LinearLayout)findViewById(R.id.home_menu_settings);
+        home_menu_starus = (LinearLayout)findViewById(R.id.home_menu_starus);
+        home_menu_feedback = (LinearLayout)findViewById(R.id.home_menu_feedback);
+        home_menu_theme = (LinearLayout)findViewById(R.id.home_menu_theme);
+
 
         airplaneToggle = (ImageView)findViewById(R.id.airplaneToggle);
         wifiToggle = (ImageView)findViewById(R.id.wifiToggle);
@@ -330,6 +351,29 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         }else{
             appdrawerLongpressDetails.setVisibility(View.INVISIBLE);
         }
+        if(isMenuLongPressedVisible){
+            //do nothing
+        }else {
+            home_menu_item_mainbg.setVisibility(View.INVISIBLE);
+        }
+
+        //to block the touch through the screen
+        home_menu_item_mainbg.setOnTouchListener(new OnSwipeTouchListener(this){
+            public void onSingleTap(){}
+        });
+
+        //set adapter for home screen long press menu
+
+
+        home_menu_wallpaper.setOnTouchListener(new OnSwipeTouchListener(this){
+            public void onSingleTap(){
+                homeLongpressMenuItemWithAnim();
+                appDrawerClickListener.hapticVibreationFeedback();
+                Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
+                startActivity(Intent.createChooser(intent, "Select Wallpaper"));
+            }
+        });
+
 
         //below code handles appdelete,apphide and appdetails
         appDeleteTv.setOnTouchListener(new OnSwipeTouchListener(this) {
@@ -383,10 +427,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
             public void onDoubleTapOccured(){
                 appDrawerClickListener.hapticVibreationFeedback();
+                //locks the screen
                 boolean isAdmin = mDevicePolicyManager.isAdminActive(mComponentName);
                 if (isAdmin) {
                     mDevicePolicyManager.lockNow();
-                }else{
+                } else {
                     Toast.makeText(getApplicationContext(), "Not Registered as Admin", Toast.LENGTH_SHORT).show();
                 }
             }
@@ -397,8 +442,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
             public void onLongPressDown(){
                 appDrawerClickListener.hapticVibreationFeedback();
-                Intent intent = new Intent(Intent.ACTION_SET_WALLPAPER);
-                startActivity(Intent.createChooser(intent, "Select Wallpaper"));
+                homeLongpressMenuItemWithAnim();
             }
 
         });
@@ -797,18 +841,79 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         }
     }
 
+
     private void bottomDrawerToggleWithAnim(){
         bottomDrawerView.setVisibility(View.VISIBLE);
         if (isBottomDrawerVisible) {
             YoYo.with(Techniques.FlipOutX).duration(250).playOn(bottomDrawerView);
             isBottomDrawerVisible = false;
-            bottomDrawerView.setVisibility(View.INVISIBLE);// remove this and add listener and add this line when animation finifshed
         }else{
             YoYo.with(Techniques.FlipInX)
                     .duration(400)
                     .playOn(bottomDrawerView);
             isBottomDrawerVisible = true;
             checkSystemStatus();
+        }
+    }
+
+    //toggle visibility and animation of long press home menu item
+    private void homeLongpressMenuItemWithAnim(){
+        if(isMenuLongPressedVisible){
+            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_wallpaper);
+            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_prefs);
+            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_settings);
+            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_starus);
+            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_feedback);
+            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_theme);
+            home_menu_item_mainbg.animate().alpha(0f).setDuration(600).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(android.animation.Animator animation) {
+                    super.onAnimationEnd(animation);
+                    home_menu_item_mainbg.setVisibility(View.INVISIBLE);
+                }
+            });
+            isMenuLongPressedVisible=false;
+        }else{
+          //  home_menu_prefs
+            home_menu_item_mainbg.setVisibility(View.VISIBLE);
+            home_menu_item_mainbg.setAlpha(0f);
+            home_menu_item_mainbg.animate().alpha(1f).setDuration(600).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(android.animation.Animator animation) {
+                    super.onAnimationEnd(animation);
+                }
+            });
+            YoYo.YoYoString rope=YoYo.with(Techniques.BounceIn)
+            .duration(600).interpolate(new AccelerateDecelerateInterpolator())
+                    .withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+                    }).playOn(home_menu_wallpaper);
+
+            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_prefs);
+            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_settings);
+            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_starus);
+            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_feedback);
+            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_theme);
+
+            isMenuLongPressedVisible = true;
         }
     }
 
@@ -896,7 +1001,10 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     @Override
     public void onBackPressed() {
        // super.onBackPressed();
-        if(appDrawerClickListener.getAppDetailsMenuVisibility()){
+        if(isMenuLongPressedVisible){
+            homeLongpressMenuItemWithAnim();
+        }
+        else if(appDrawerClickListener.getAppDetailsMenuVisibility()){
             appDrawerClickListener.getDetailsMenuInView();
         }else if(isBottomDrawerVisible){
             bottomDrawerToggleWithAnim();
@@ -946,7 +1054,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             homeClockContainer.animate().translationX(0);
             slideDrawerView.animate().translationX(-slideDrawerView.getWidth()).alpha(0.0f).setListener(new AnimatorListenerAdapter() {
                 @Override
-                public void onAnimationEnd(Animator animation) {
+                public void onAnimationEnd(android.animation.Animator animation) {
                     super.onAnimationEnd(animation);
                     slideDrawerView.setVisibility(View.VISIBLE);
                 }
@@ -955,78 +1063,6 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         }
     }
 
-    private void getBottomDrawerInView(){
-        // direction true == in and false == out
-        if(isBottomDrawerVisible == false){
-
-            //  mainHomeView.animate().translationX(slideDrawerView.getWidth());
-            bottomDrawerView.setVisibility(View.VISIBLE);
-            bottomDrawerView.setAlpha(0.0f);
-            bottomDrawerView.animate().translationY(heightPixels).alpha(1.0f).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    checkSystemStatus();
-                }
-            });
-            isBottomDrawerVisible = true;
-        }else{
-            //mainHomeView.animate().translationX(0);
-            bottomDrawerView.animate().translationY(bottomDrawerView.getHeight()).alpha(0).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    bottomDrawerView.setVisibility(View.VISIBLE);
-                }
-            });
-            isBottomDrawerVisible = false;
-        }
-    }
-
-    public void animateSlideInOut() {
-        if (isAppDrawerVisible) {
-            appDrawerView.animate().translationY(mainHomeView.getHeight()).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    appDrawerView.setVisibility(View.VISIBLE);
-                }
-            });
-            isAppDrawerVisible = false;
-        }else{
-            appDrawerView.setVisibility(View.VISIBLE);
-            appDrawerView.setAlpha(0.5f);
-            appDrawerView.animate().alpha(1.0f).translationY(heightPixels);
-            isAppDrawerVisible = true;
-        }
-    }
-
-    public void animateFadeInOut() {
-        if (isAppDrawerVisible) {
-            appDrawerView.animate()
-                    .alpha(0.0f)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            appDrawerView.setVisibility(View.INVISIBLE);
-                        }
-                    });
-            isAppDrawerVisible = false;
-        } else {
-            appDrawerView.setVisibility(View.VISIBLE);
-            appDrawerView.setAlpha(0.0f);
-            appDrawerView.animate().alpha(1.0f)
-                    .setListener(new AnimatorListenerAdapter() {
-                        @Override
-                        public void onAnimationEnd(Animator animation) {
-                            super.onAnimationEnd(animation);
-                            appDrawerView.setVisibility(View.VISIBLE);
-                        }
-                    });;
-            isAppDrawerVisible = true;
-        }
-    }
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {

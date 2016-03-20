@@ -13,6 +13,7 @@
         android:orientation="horizontal">
         
         <LinearLayout
+            android:id="@+id/home_menu_wallpaper"
            android:gravity="center_vertical|center_horizontal"
             android:layout_width="50dp"
             android:layout_height="100dp"
@@ -36,6 +37,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/home_menu_prefs"
             android:gravity="center_vertical|center_horizontal"
             android:layout_width="50dp"
             android:layout_height="100dp"
@@ -58,6 +60,7 @@
 
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/home_menu_settings"
             android:gravity="center_vertical|center_horizontal"
             android:layout_width="50dp"
             android:layout_height="100dp"
@@ -89,6 +92,7 @@
         android:orientation="horizontal">
 
         <LinearLayout
+            android:id="@+id/home_menu_starus"
             android:gravity="center_vertical|center_horizontal"
             android:layout_width="50dp"
             android:layout_height="100dp"
@@ -112,6 +116,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/home_menu_feedback"
             android:gravity="center_vertical|center_horizontal"
             android:layout_width="50dp"
             android:layout_height="100dp"
@@ -134,6 +139,7 @@
 
         </LinearLayout>
         <LinearLayout
+            android:id="@+id/home_menu_theme"
             android:gravity="center_vertical|center_horizontal"
             android:layout_width="50dp"
             android:layout_height="100dp"

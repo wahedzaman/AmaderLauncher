@@ -86,7 +86,7 @@ public class ThemeManager {
     }
 
     public Drawable createNewThemeIcon(Drawable mainIcon){
-        iconThemeTray = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.d_home);
+        iconThemeTray = BitmapFactory.decodeResource(mContext.getResources(),R.drawable.d_home); //prev was iconback
         Bitmap mIcon = drawableToBitmap(mainIcon);
         mIcon = Bitmap.createScaledBitmap(mIcon, iconThemeTray.getWidth()-iconThemeTray.getWidth()/5, iconThemeTray.getHeight()-iconThemeTray.getHeight()/5, false);
 
