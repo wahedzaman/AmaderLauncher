@@ -24,6 +24,7 @@ import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
 import android.support.annotation.UiThread;
@@ -46,6 +47,7 @@ import com.daimajia.androidanimations.library.YoYo;
 import com.nineoldandroids.animation.Animator;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Calendar;
 
 
@@ -138,6 +140,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     LinearLayout home_menu_item_mainbg,home_menu_wallpaper,home_menu_prefs,home_menu_settings,home_menu_starus,home_menu_feedback,home_menu_theme;
     //boolean for home screen longpress menu
     private boolean isMenuLongPressedVisible = false;
+    //long var for animation on longpress menu
+    private long lastStartedAnimOnMenu ;
+    private long menuAnimInterval = 100;
 
 
     //end of long press menu items
@@ -299,6 +304,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         registerReceiver(new PackageChangeBroadCastListener(), filter);
 
         this.registerReceiver(this.mBatInfoReceiver, new IntentFilter(Intent.ACTION_BATTERY_CHANGED));
+
+        //add broadcast receiver for theme
+        IntentFilter applyTheme = new IntentFilter();
+        applyTheme.addAction("com.durbinsoft.applytheme");
+        registerReceiver(new PackageChangeBroadCastListener(),applyTheme);
 
     }
 
@@ -858,14 +868,41 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     //toggle visibility and animation of long press home menu item
     private void homeLongpressMenuItemWithAnim(){
+        Handler handler = new Handler();
         if(isMenuLongPressedVisible){
-            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_wallpaper);
-            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_prefs);
-            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_settings);
-            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_starus);
-            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_feedback);
-            YoYo.with(Techniques.SlideOutDown).duration(300).playOn(home_menu_theme);
-            home_menu_item_mainbg.animate().alpha(0f).setDuration(600).setListener(new AnimatorListenerAdapter() {
+            YoYo.with(Techniques.SlideOutDown).duration(600).playOn(home_menu_wallpaper);
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.SlideOutDown).duration(600).playOn(home_menu_prefs);
+                }
+            }, menuAnimInterval);
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.SlideOutDown).duration(600).playOn(home_menu_settings);
+                }
+            }, menuAnimInterval*2);
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.SlideOutDown).duration(600).playOn(home_menu_starus);
+                }
+            }, menuAnimInterval * 3);
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.SlideOutDown).duration(600).playOn(home_menu_feedback);
+                }
+            }, menuAnimInterval * 4);
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.SlideOutDown).duration(600).playOn(home_menu_theme);
+                }
+            }, menuAnimInterval * 5);
+
+
+            home_menu_item_mainbg.animate().alpha(0f).setDuration(1000).setListener(new AnimatorListenerAdapter() {
                 @Override
                 public void onAnimationEnd(android.animation.Animator animation) {
                     super.onAnimationEnd(animation);
@@ -883,6 +920,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                     super.onAnimationEnd(animation);
                 }
             });
+
             YoYo.YoYoString rope=YoYo.with(Techniques.BounceIn)
             .duration(600).interpolate(new AccelerateDecelerateInterpolator())
                     .withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
@@ -907,11 +945,34 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                         }
                     }).playOn(home_menu_wallpaper);
 
-            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_prefs);
-            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_settings);
-            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_starus);
-            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_feedback);
-            YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_theme);
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_prefs);
+                }
+            }, menuAnimInterval);
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_settings);
+                }
+            }, menuAnimInterval*2);
+
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_starus);
+                }
+            }, menuAnimInterval*3);
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_feedback);
+                }
+            }, menuAnimInterval*4);
+            handler.postDelayed(new Runnable() {
+                public void run() {
+                    YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_theme);
+                }
+            }, menuAnimInterval*5);
 
             isMenuLongPressedVisible = true;
         }
@@ -1569,18 +1630,30 @@ public class PackageChangeBroadCastListener extends BroadcastReceiver{
             appDrawerView.setOnItemClickListener(new AppDrawerClickListener(getApplicationContext(), packages));
             */
 
-           // String packageName=intent.getData().getEncodedSchemeSpecificPart();
-          //  if(){}
-          //  sPrefs.setApps(packageName,"null");
-
-            Log.d("test", "broadcast..");
-
-
             initiateAppRelatedAdaptersAndClass();
             setBottomDrawerApps();
+        }
+    }
 
-            //this is not needed at all. because we are doint this all here...
-            //sPrefs.setChangeMadeBool(true);
+    public class ThemeAdapterClassListener extends BroadcastReceiver{
+
+        String details,name,packs;
+        ArrayList<String> iconPackName;
+
+        @Override
+        public void onReceive(Context context, Intent intent) {
+
+            if(intent.getExtras() != null){
+                details = intent.getStringExtra("details");
+                name = intent.getStringExtra("name");
+                packs = intent.getStringExtra("packs");
+                iconPackName = intent.getExtras().getStringArrayList("iconPackName");
+
+                sPrefs.setThemeDetails(details);
+                sPrefs.setThemeName(name);
+                sPrefs.setThemePackName(packs);
+                packages.setBooleanTheme(true,sPrefs,iconPackName);
+            }
         }
     }
 

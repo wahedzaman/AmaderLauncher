@@ -6,6 +6,12 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.Environment;
+import android.util.Log;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.util.ArrayList;
 
 /**
  * Created by Md.Wahuduzzaman on 3/17/2016.
@@ -13,6 +19,7 @@ import android.graphics.drawable.Drawable;
 public class ThemeManager {
     Drawable icon;
     Context mContext;
+    static PreferenceClassForData sPrefs ;
 
     Bitmap iconThemeTray;
 
@@ -63,16 +70,73 @@ public class ThemeManager {
             R.drawable.skype,R.drawable.soundrecorder,R.drawable.twitter,R.drawable.viber
     };
 
+    private static String currentThemeName;
+    private static String currentThemePackName;
+    private static ArrayList<Drawable> currentIcon;
+    private static ArrayList<String> currentIconPacName;
+    private static String currentThemeDetails;
+    private static Bitmap thumbnail;
+
+    private final String APP_PATH_SD_CARD = "Android/data/";
 
 
-    public int getThemeIconIndex(String appLabel){
-        appLabel = appLabel.toLowerCase();
+    //
+    public void updateThemeManager(PreferenceClassForData prefs){
+        sPrefs = prefs;
+        setCurrentThemeName(sPrefs.getThemeName());
+        setCurrentThemePackName(sPrefs.getThemePackName());
+        setCurrentThemeDetails(sPrefs.getThemeDetails());
+        initThemeIcon();
+    }
+
+    private  void initThemeIcon (){
+        Bitmap tmpIcon;
+        for(int i =0;i<currentIconPacName.size();i++){
+            tmpIcon = getIconFromSd(currentIconPacName.get(i));
+            currentIcon.add(new BitmapDrawable(mContext.getResources(),tmpIcon));
+        }
+    }
+
+
+    public void setCurrentIconPacName(ArrayList<String> aName){
+        currentIconPacName = aName;
+    }
+
+    public void setCurrentThemeName(String name){
+        currentThemeName = name;
+    }
+
+    public void setCurrentThemePackName(String name){
+        currentThemePackName = name;
+    }
+
+    public void setCurrentThemeDetails(String details){
+        currentThemeDetails = details;
+    }
+
+    public void getThumbnail(){
+
+    }
+
+
+    public int getThemeIconIndex(String appLabel,String appPack){
         int val =-1;
-        for(int i =0; i<themeIcons.length; i++){
-            for(int j=0; j<appName[i].length;j++){
-                if(appName[i][j].equals(appLabel)){
+        appLabel = appLabel.toLowerCase();
+        appPack = appPack.toLowerCase();
+        if(currentThemeName.equals("Default Theme 2.0")){
+            for(int i =0; i<themeIcons.length; i++){
+                for(int j=0; j<appName[i].length;j++){
+                    if(appName[i][j].equals(appLabel)){
+                        val = i;
+                        i = themeIcons.length;
+                        break;
+                    }
+                }
+            }
+        }else{
+            for(int i =0; i<currentIconPacName.size();i++){
+                if(appPack.equals(currentIconPacName.get(i))){
                     val = i;
-                    i = themeIcons.length;
                     break;
                 }
             }
@@ -81,8 +145,15 @@ public class ThemeManager {
     }
 
     public Drawable getThemeIcon(int index){
-        Bitmap tmpImg = BitmapFactory.decodeResource(mContext.getResources(), themeIcons[index]);
-        return  new BitmapDrawable(mContext.getResources(),tmpImg);
+        Drawable d ;
+        if(currentThemeName.equals("Default Theme 2.0")){
+            Bitmap tmpImg = BitmapFactory.decodeResource(mContext.getResources(), themeIcons[index]);
+            d=new BitmapDrawable(mContext.getResources(),tmpImg);
+        }else{
+            d = currentIcon.get(index);
+        }
+
+        return  d;
     }
 
     public Drawable createNewThemeIcon(Drawable mainIcon){
@@ -125,5 +196,55 @@ public class ThemeManager {
         drawable.setBounds(0, 0, canvas.getWidth(), canvas.getHeight());
         drawable.draw(canvas);
         return bitmap;
+    }
+
+
+    private Bitmap getIconFromSd(String filename) {
+
+        String fullPath = Environment.getExternalStorageDirectory().getAbsolutePath() + APP_PATH_SD_CARD + currentThemePackName;
+        Bitmap sdIcon = null;
+
+// Look for the file on the external storage
+        try {
+            if (isSdReadable() == true) {
+                sdIcon = BitmapFactory.decodeFile(fullPath + "/" + filename);
+            }
+        } catch (Exception e) {
+            Log.e("getThumbnail() external", e.getMessage());
+        }
+
+// If no file on external storage, look in internal storage
+        if (sdIcon == null) {
+            try {
+                File filePath = mContext.getFileStreamPath(filename);
+                FileInputStream fi = new FileInputStream(filePath);
+                sdIcon = BitmapFactory.decodeStream(fi);
+            } catch (Exception ex) {
+                Log.e("getThumbnail() internal", ex.getMessage());
+            }
+        }
+        return sdIcon;
+    }
+
+    private boolean isSdReadable() {
+
+        boolean mExternalStorageAvailable = false;
+        String state = Environment.getExternalStorageState();
+
+        if (Environment.MEDIA_MOUNTED.equals(state)) {
+            // We can read and write the media
+            mExternalStorageAvailable = true;
+            Log.i("isSdReadable", "External storage card is readable.");
+        } else if (Environment.MEDIA_MOUNTED_READ_ONLY.equals(state)) {
+            // We can only read the media
+            Log.i("isSdReadable", "External storage card is readable.");
+            mExternalStorageAvailable = true;
+        } else {
+        // Something else is wrong. It may be one of many other
+        // states, but all we need to know is we can neither read nor write
+            mExternalStorageAvailable = false;
+        }
+
+        return mExternalStorageAvailable;
     }
 }

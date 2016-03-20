@@ -48,15 +48,25 @@ public class ApplicationPackage {
 
     ThemeManager themeManager;
 
+    private static boolean isThemeChanged = false;
+    private static PreferenceClassForData sPrefs;
+
     public ApplicationPackage(){}
 
     public ApplicationPackage(Context c) {
         mContext = c;
         packageManager = c.getPackageManager();
+        themeManager = new ThemeManager(mContext);
+    }
+
+    public void setBooleanTheme(boolean booleanTheme, PreferenceClassForData prefs, ArrayList<String> iconPacks){
+        isThemeChanged = true;
+        sPrefs = prefs;
+        themeManager.setCurrentIconPacName(iconPacks);
+        themeManager.updateThemeManager(sPrefs);
     }
 
     public void initializePackages() {
-        themeManager = new ThemeManager(mContext);
         final Intent myIntent = new Intent(Intent.ACTION_MAIN, null);
         myIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         List<ResolveInfo> packageList = packageManager.queryIntentActivities(
@@ -68,19 +78,22 @@ public class ApplicationPackage {
         appLabel = new String[size];
         int index;
 
+        //use isThemeChanged bool to call func from ThemeManager accordingly
+
         for (int i = 0; i < size; i++) {
             packageName[i] = packageList.get(i).activityInfo.packageName;
             appLabel[i] = packageList.get(i).loadLabel(packageManager)
                     .toString();
-            index = themeManager.getThemeIconIndex(appLabel[i]);
-            if(index == -1){
-                //icon[i] = packageList.get(i).loadIcon(packageManager);
-                icon[i] = themeManager.createNewThemeIcon(packageList.get(i).loadIcon(packageManager));
-            }else {
-                icon[i] = themeManager.getThemeIcon(index);
-            }
-        }
 
+                index = themeManager.getThemeIconIndex(appLabel[i],packageName[i]);
+                if(index == -1){
+                    //icon[i] = packageList.get(i).loadIcon(packageManager);
+                    icon[i] = themeManager.createNewThemeIcon(packageList.get(i).loadIcon(packageManager));
+                }else {
+                    icon[i] = themeManager.getThemeIcon(index);
+                }
+
+        }
         sortApps();
         //resortForHiddenApps();
         //initiateGooglePacks();

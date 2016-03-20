@@ -84,6 +84,14 @@ public class PreferenceClassForData {
     public static int lockAppsConter = 0;
     public String SP_LCOUNTER = "AMAR_LAUNCHER_LOCK_COUNTER";
 
+    public static String SP_THEME_NAME = "DURBIN_LAUNCHER_THEME_NAME";
+    public static String SP_THEME_PACK_NAME = "DURBIN_LAUNCHER_THEME_PACK_NAME";
+    public static String SP_THEME_DETAILS = "DURBIN_LAUNCHER_THEME_DETAILS";
+
+    public static String THEME_NAME;
+    public static String THEME_PACK_NAME;
+    public static String THEME_DETAILS;
+
     private static ArrayList<String> lockedApps = new ArrayList<String>();
 
     PreferenceClassForData(Context mContext){
@@ -97,7 +105,12 @@ public class PreferenceClassForData {
 
         initialSetup = sp.getBoolean(SP_INITIATED, true);
         hiddenAppsNumber = sp.getInt(SP_HAPPNumber, 0);
-        lockAppsConter = sp.getInt(SP_LCOUNTER,0);
+       // lockAppsConter = sp.getInt(SP_LCOUNTER,0);
+
+        THEME_NAME = sp.getString(SP_THEME_NAME, "Default Theme 2.0");
+        THEME_PACK_NAME = sp.getString(SP_THEME_PACK_NAME, "com.durbinsoft.amarlauncher");
+        THEME_DETAILS = sp.getString(SP_THEME_DETAILS, "Default Application Theme");
+
 
         app1 = sp.getString(SP_APP1, "com.durbinsoft.amarlauncher");
         app2 = sp.getString(SP_APP2, "com.durbinsoft.amarlauncher");
@@ -180,6 +193,39 @@ public class PreferenceClassForData {
                 break;
         }
         return  val;
+    }
+    public String getThemePackName(){
+
+        return THEME_PACK_NAME;
+    }
+
+    public String getThemeName(){
+
+        return THEME_NAME;
+    }
+
+    public String getThemeDetails(){
+
+        return THEME_DETAILS;
+    }
+
+    public void setThemeName(String n){
+        THEME_NAME = n;
+        spHeader();
+        editor.putString(SP_THEME_NAME, THEME_NAME);
+        spFooter();
+    }
+    public void setThemePackName(String e){
+        THEME_PACK_NAME = e;
+        spHeader();
+        editor.putString(SP_THEME_PACK_NAME, THEME_PACK_NAME);
+        spFooter();
+    }
+    public void setThemeDetails(String d){
+        THEME_DETAILS = d;
+        spHeader();
+        editor.putString(SP_THEME_DETAILS, THEME_DETAILS);
+        spFooter();
     }
 
     public String getHiddenApp(int x){
