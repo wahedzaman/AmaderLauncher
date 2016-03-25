@@ -53,10 +53,12 @@ public class ApplicationPackage {
 
     public ApplicationPackage(){}
 
-    public ApplicationPackage(Context c) {
+    public ApplicationPackage(Context c, PreferenceClassForData prefs) {
         mContext = c;
+        sPrefs = prefs;
         packageManager = c.getPackageManager();
         themeManager = new ThemeManager(mContext);
+        themeManager.updateThemeManager(sPrefs);
     }
 
     public void setBooleanTheme(boolean booleanTheme, PreferenceClassForData prefs, ArrayList<String> iconPacks){

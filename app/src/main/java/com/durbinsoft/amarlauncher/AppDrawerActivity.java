@@ -147,6 +147,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     //end of long press menu items
 
+    //delete this
+    int did = 99;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -162,24 +164,29 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         justStarted = true;
 
-        initiateView();
-        setAllAdapterAndEverything();
-        initiateAppRelatedAdaptersAndClass();
 
-        if(initialSetup){
-            Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
-            intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mComponentName);
-            intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,description);
-            startActivityForResult(intent, ADMIN_INTENT);
 
-            //to remove admin
-            //mDevicePolicyManager.removeActiveAdmin(mComponentName);
+            initiateView();
+            setAllAdapterAndEverything();
+            initiateAppRelatedAdaptersAndClass();
 
-            Intent i = new Intent(this,AppChooserApplication.class);
-            startActivity(i);
-        }
+            if(initialSetup){
+                Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
+                intent.putExtra(DevicePolicyManager.EXTRA_DEVICE_ADMIN, mComponentName);
+                intent.putExtra(DevicePolicyManager.EXTRA_ADD_EXPLANATION,description);
+                startActivityForResult(intent, ADMIN_INTENT);
 
-        setBottomDrawerApps();
+                //to remove admin
+                //mDevicePolicyManager.removeActiveAdmin(mComponentName);
+
+                Intent i = new Intent(this,AppChooserApplication.class);
+                startActivity(i);
+            }
+
+            setBottomDrawerApps();
+
+
+
 
       // isBottomDrawerVisible = true;
        // bottomDrawerToggleWithAnim();
@@ -192,21 +199,27 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         //use the boolean isAnyChangeMade to fix the bug
 
         super.onResume();
-        initialSetup = sPrefs.getBool();
-        isAnyChangeMade = sPrefs.getAnyChangeMadeBool();
 
-        if((initialSetup == false)&&(isAnyChangeMade)){
-            setBottomDrawerApps();
-            setAllAdapterAndEverything();
-            initiateAppRelatedAdaptersAndClass();
-            isAnyChangeMade = false;
-            sPrefs.setChangeMadeBool(isAnyChangeMade);
-        }else if(justStarted){
-            setBottomDrawerApps();
-            justStarted = false;
-        }
 
-        hclock.updateHomeClockTime();
+            initialSetup = sPrefs.getBool();
+            isAnyChangeMade = sPrefs.getAnyChangeMadeBool();
+
+            if((initialSetup == false)&&(isAnyChangeMade)){
+                setBottomDrawerApps();
+                setAllAdapterAndEverything();
+                initiateAppRelatedAdaptersAndClass();
+                isAnyChangeMade = false;
+                sPrefs.setChangeMadeBool(isAnyChangeMade);
+            }else if(justStarted){
+                setBottomDrawerApps();
+                justStarted = false;
+            }
+
+            hclock.updateHomeClockTime();
+
+
+
+
     }
 
     public void initiateView()
@@ -825,7 +838,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     }
 
     private void initiateAppRelatedAdaptersAndClass(){
-        packages = new ApplicationPackage(this);
+        packages = new ApplicationPackage(this,sPrefs);
         packages.initializePackages();
 
         customDrawerAdapter = new CustomApplicationDrawerAdapter(this, packages);

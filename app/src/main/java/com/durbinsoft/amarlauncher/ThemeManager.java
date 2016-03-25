@@ -86,7 +86,11 @@ public class ThemeManager {
         setCurrentThemeName(sPrefs.getThemeName());
         setCurrentThemePackName(sPrefs.getThemePackName());
         setCurrentThemeDetails(sPrefs.getThemeDetails());
-        initThemeIcon();
+        if(currentThemeName.equals("Default Theme 2.0")) {
+
+        }else{
+            initThemeIcon();
+        }
     }
 
     private  void initThemeIcon (){

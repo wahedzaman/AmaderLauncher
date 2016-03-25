@@ -9,8 +9,9 @@
     <uses-permission android:name="android.permission.WRITE_SETTINGS" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.VIBRATE" />
-    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE"/>
-    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.CALL_PHONE" />
 
     <uses-feature android:name="android.hardware.camera" />
 
@@ -47,21 +48,29 @@
             android:label="@string/title_activity_preference_screen" >
         </activity>
         <activity
-            android:theme="@android:style/Theme.Holo.NoActionBar"
-            android:name=".AppChooserApplication">
+            android:name=".AppChooserApplication"
+            android:theme="@android:style/Theme.Holo.NoActionBar" >
         </activity>
+
         <receiver
-            android:name="MyAdminReceiver"
-            android:permission="android.permission.BIND_DEVICE_ADMIN">
+            android:name=".MyAdminReceiver"
+            android:permission="android.permission.BIND_DEVICE_ADMIN" >
             <meta-data
                 android:name="android.app.device_admin"
-                android:resource="@xml/admin"/>
+                android:resource="@xml/admin" />
 
             <intent-filter>
-                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED"/>
+                <action android:name="android.app.action.DEVICE_ADMIN_ENABLED" />
             </intent-filter>
         </receiver>
-        <service android:name=".TimerService"/>
+
+        <service android:name=".TimerService" />
+
+        <activity
+            android:theme="@style/CustomTheme"
+            android:name=".MainActivity"
+            android:label="@string/title_activity_main" >
+        </activity>
     </application>
 
 </manifest>
