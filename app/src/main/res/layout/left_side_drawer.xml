@@ -12,8 +12,9 @@
         android:orientation="vertical">
 
         <LinearLayout
+            android:id="@+id/leftProfilePicture"
             android:layout_width="match_parent"
-            android:layout_height="200dp"
+            android:layout_height="250dp"
             android:layout_marginTop="20dp"
             android:background="@drawable/sideimg9"
             android:orientation="vertical">
@@ -35,6 +36,7 @@
                 android:orientation="horizontal">
 
                 <TextView
+                    android:paddingLeft="10dp"
                     android:id="@+id/leftDrawerNameText"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
@@ -42,13 +44,14 @@
                     android:gravity="center_vertical"
                     android:text="MD. WAHEDUZZAMAN"
                     android:textColor="#ffffff"
-                    android:textSize="20dp" />
+                    android:textSize="25dp" />
 
                 <ImageView
+                    android:onClick="leftDrawerSettings"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="4"
-                    android:src="@drawable/preference" />
+                    android:src="@drawable/menuitem_syssetting" />
 
             </LinearLayout>
 
@@ -67,7 +70,9 @@
                 android:orientation="vertical">
 
                 <include layout="@layout/side_bar_clock" />
+                <include layout="@layout/left_drawer_calendar" />
                 <include layout="@layout/calculator_left_panel" />
+
 
             </LinearLayout>
 

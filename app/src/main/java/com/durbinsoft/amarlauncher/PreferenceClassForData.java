@@ -43,6 +43,8 @@ public class PreferenceClassForData {
     private static String Happ9;
     private static String Happ10;
 
+    private static String signature;
+
 
     static SharedPreferences sp;
     Context mContext;
@@ -52,6 +54,9 @@ public class PreferenceClassForData {
 
 
     private String SP_NAME = "AMAR_LAUNCHER_SP";
+    private String SP_SIG = "SIGNATURE";
+    private String SP_SETT_IMG_PATH = "SETTINGS_IMAGE";
+
     private String SP_INITIATED = "AMAR_LAUNCHER_INITIATED";
     public String SP_APP1 = "AMAR_LAUNCHER_APP1";
     public String SP_APP2 = "AMAR_LAUNCHER_APP2";
@@ -100,7 +105,19 @@ public class PreferenceClassForData {
     }
 
 
-    public void initializeSharedPrefs(){
+    //call this method from the AppDrawerActivity.getSliderDrawerInView()
+    public String getSignature(){
+        signature = sp.getString(SP_SIG, "Durbin Launcher");
+        return signature;
+    }
+
+    //call this method from the AppDrawerActivity.getSliderDrawerInView()
+    public String getSlideImg(){
+        String imgPath = sp.getString(SP_SETT_IMG_PATH,"null");
+        return imgPath;
+    }
+
+    public void initializeSharedPrefs() {
         sp = mContext.getSharedPreferences(SP_NAME, mContext.MODE_PRIVATE);
 
         initialSetup = sp.getBoolean(SP_INITIATED, true);

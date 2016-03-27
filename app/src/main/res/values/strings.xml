@@ -6,4 +6,5 @@
     <string name="title_activity_preference_screen">PreferenceScreen</string>
     <string name="title_activity_app_chooser_application">AppChooserApplication</string>
     <string name="title_activity_main">MainActivity</string>
+    <string name="title_activity_left_drawer">LeftDrawerActivity</string>
 </resources>

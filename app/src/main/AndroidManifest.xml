@@ -67,9 +67,13 @@
         <service android:name=".TimerService" />
 
         <activity
-            android:theme="@style/CustomTheme"
             android:name=".MainActivity"
-            android:label="@string/title_activity_main" >
+            android:label="@string/title_activity_main"
+            android:theme="@style/CustomTheme" >
+        </activity>
+        <activity
+            android:name=".LeftDrawerActivity"
+            android:label="Drawer Preference" >
         </activity>
     </application>
 

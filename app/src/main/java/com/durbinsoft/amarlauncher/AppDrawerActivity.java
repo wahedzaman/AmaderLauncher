@@ -19,6 +19,7 @@ import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Typeface;
+import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
@@ -27,7 +28,6 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
-import android.support.annotation.UiThread;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
@@ -44,7 +44,6 @@ import android.widget.Toast;
 
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
-import com.nineoldandroids.animation.Animator;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -150,6 +149,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     //delete this
     int did = 99;
 
+    com.prolificinteractive.materialcalendarview.MaterialCalendarView myCalendarView;
+
+    LinearLayout profImageView;
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -168,7 +172,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
             initiateView();
             setAllAdapterAndEverything();
-            initiateAppRelatedAdaptersAndClass();
+        initiateAppRelatedAdaptersAndClass();
 
             if(initialSetup){
                 Intent intent = new Intent(DevicePolicyManager.ACTION_ADD_DEVICE_ADMIN);
@@ -185,8 +189,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
             setBottomDrawerApps();
 
-
-
+        myCalendarView = (com.prolificinteractive.materialcalendarview.MaterialCalendarView)findViewById(R.id.customCalendarView);
+        profImageView = (LinearLayout) findViewById(R.id.leftProfilePicture);
 
       // isBottomDrawerVisible = true;
        // bottomDrawerToggleWithAnim();
@@ -213,13 +217,26 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }else if(justStarted){
                 setBottomDrawerApps();
                 justStarted = false;
+            }else if(isAppTrayVisible){
+                leftDrawerNameText.setText(sPrefs.getSignature());
+                if(sPrefs.getSlideImg().equals("null")){
+                    //change the default picture to a custom picture (tap to add image)
+                    Bitmap tmpImg = BitmapFactory.decodeResource(getResources(), R.drawable.defaultaddicon);
+                    profImageView.setBackground(new BitmapDrawable(getResources(),tmpImg));
+                }else{
+                    Bitmap bmp = null;
+                    BitmapFactory.Options options = new BitmapFactory.Options();
+                    options.inSampleSize = 2;
+
+                    bmp = BitmapFactory
+                            .decodeFile(sPrefs.getSlideImg(),options);
+                    bmp = Bitmap.createScaledBitmap(bmp,  bmp.getWidth(), bmp.getHeight(), false);
+
+                    profImageView.setBackground(new BitmapDrawable(getResources(),bmp));
+                }
             }
 
             hclock.updateHomeClockTime();
-
-
-
-
     }
 
     public void initiateView()
@@ -323,6 +340,12 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         applyTheme.addAction("com.durbinsoft.applytheme");
         registerReceiver(new PackageChangeBroadCastListener(),applyTheme);
 
+    }
+
+    public void leftDrawerSettings(View v){
+        appDrawerClickListener.hapticVibreationFeedback();
+        Intent leftSettings = new Intent(this,LeftDrawerActivity.class);
+        startActivity(leftSettings);
     }
 
     public void setAllAdapterAndEverything(){
@@ -994,7 +1017,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private void setChangedApplicationToButton(ImageView imageButton, String packageName, String appPositionName){ // stage reffers to the button of favourite button or appbar button. 0 or 1
         //update sharedpreferences, update icon, update packageName link
         imageButton.setImageDrawable(packages.getIcon(packages.searchAndReturnPackage(packageName)));
-        sPrefs.setApps(packageName,appPositionName);
+        sPrefs.setApps(packageName, appPositionName);
     }
 
     private void setBottomDrawerApps(){
@@ -1108,12 +1131,31 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         // direction true == in and false == out
         if(!isAppTrayVisible){
 
-            ScrollView sv = (ScrollView)findViewById(R.id.scrl);
+            if(sPrefs.getSlideImg().equals("null")){
+                //change the default picture to a custom picture (tap to add image)
+                Bitmap tmpImg = BitmapFactory.decodeResource(getResources(), R.drawable.defaultaddicon);
+                profImageView.setBackground(new BitmapDrawable(getResources(),tmpImg));
+            }else{
+                Bitmap bmp = null;
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inSampleSize = 2;
+
+                bmp = BitmapFactory
+                        .decodeFile(sPrefs.getSlideImg(),options);
+                bmp = Bitmap.createScaledBitmap(bmp,  bmp.getWidth(), bmp.getHeight(), false);
+
+                profImageView.setBackground(new BitmapDrawable(getResources(),bmp));
+            }
+
+
+
+            ScrollView sv = (ScrollView) findViewById(R.id.scrl);
             sv.scrollTo(sv.getBottom(), 0);
 
             Typeface custom_font = Typeface.createFromAsset(getAssets(),  "fonts/customfont2.ttf");
 
             leftDrawerNameText.setTypeface(custom_font);
+            leftDrawerNameText.setText(sPrefs.getSignature());
            // sv.fullScroll(View.FOCUS_UP);
             leftDrawerClockTimeText.setText(myCalenderConversion.returnConvertedTime());
             leftDrawerClockDateText.setText(myCalenderConversion.retunConvertedDate());
@@ -1123,6 +1165,12 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             slideDrawerView.setAlpha(0.0f);
             slideDrawerView.animate().translationX(widthPixels).alpha(1.0f);
             isAppTrayVisible = true;
+
+            Calendar c = Calendar.getInstance();
+
+
+            myCalendarView.setDateSelected(c.getTime(),true);
+
         }else{
             mainHomeView.animate().translationX(0);
             homeClockContainer.animate().translationX(0);

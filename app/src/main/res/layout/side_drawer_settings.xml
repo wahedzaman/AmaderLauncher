@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:padding="15dp"
+    android:background="@android:color/white"
+    android:orientation="vertical"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <LinearLayout
+        android:layout_weight="1"
+        android:orientation="vertical"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Your Signature"
+            android:textSize="20dp"
+            android:textColor="@android:color/black"/>
+        <EditText
+            android:textColor="@color/grey"
+            android:id="@+id/signatureLeftSide"
+            android:layout_marginTop="5dp"
+            android:textSize="25dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:hint="My Name"
+            />
+
+        <TextView
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:text="Banner Picture"
+            android:textSize="20dp"
+            android:textColor="@android:color/black"/>
+
+        <LinearLayout
+            android:layout_marginTop="10dp"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal">
+
+            <ImageView
+                android:onClick="selectImage"
+                android:id="@+id/leftSidePicSettings"
+                android:layout_width="fill_parent"
+                android:layout_height="200dp"
+                android:src="@drawable/menuitem_wallpaper"/>
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="7">
+
+        <Button
+            android:onClick="cancelClicked"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="CANCEL"/>
+        <Button
+            android:onClick="saveClicked"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_weight="1"
+            android:text="SAVE"/>
+
+    </LinearLayout>
+
+
+
+</LinearLayout>
