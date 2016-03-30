@@ -1,5 +1,6 @@
 package com.durbinsoft.amarlauncher;
 
+import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.app.Activity;
 import android.app.AlarmManager;
@@ -16,24 +17,30 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.pm.PackageManager;
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.Typeface;
 import android.graphics.drawable.BitmapDrawable;
 import android.hardware.Camera;
 import android.net.Uri;
 import android.net.wifi.WifiManager;
 import android.os.BatteryManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.provider.MediaStore;
 import android.provider.Settings;
+import android.text.style.StyleSpan;
 import android.util.DisplayMetrics;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -45,6 +52,8 @@ import android.widget.Toast;
 import com.daimajia.androidanimations.library.Techniques;
 import com.daimajia.androidanimations.library.YoYo;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -58,7 +67,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     GridView appDrawerView, newAppGrid, googleAppGrid;
     LinearLayout appTrayView, slideDrawerView, mainHomeView, bottomDrawerView, appdrawerLongpressDetails, rightSideDrawerView,homeClockContainer;
-    ImageView appDrawerHomeButton, appDrawerBuuton1,appDrawerBuuton2,appDrawerBuuton3,appDrawerBuuton4,bottomDrawerbutton1,bottomDrawerbutton2,bottomDrawerbutton3,bottomDrawerbutton4,bottomDrawerbutton5,bottomDrawerbutton6,bottomDrawerbutton7,bottomDrawerbutton8,bottomDrawerbutton9,bottomDrawerbutton10;
+    ImageView appDrawerHomeButton, appDrawerBuuton1,appDrawerBuuton2,appDrawerBuuton3,appDrawerBuuton4,bottomDrawerbutton1,bottomDrawerbutton2,bottomDrawerbutton3,bottomDrawerbutton4,bottomDrawerbutton5,bottomDrawerbutton6,bottomDrawerbutton7,bottomDrawerbutton8,bottomDrawerbutton9,bottomDrawerbutton10,bottomDrawerbutton11,bottomDrawerbutton12,bottomDrawerbutton13,bottomDrawerbutton14,bottomDrawerbutton15;
 
 
 
@@ -146,6 +155,9 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
     //end of long press menu items
 
+    //Main Frame Layout of this activity
+    FrameLayout appDrawerMainContainer;
+
     //delete this
     int did = 99;
 
@@ -159,8 +171,21 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         super.onCreate(savedInstanceState);
         setContentView(R.layout.app_drawer);
         //this.requestWindowFeature(Window.FEATURE_NO_TITLE);
+        appDrawerMainContainer = (FrameLayout)findViewById(R.id.appDrawerMainContainer);
+
+        // Check if the version of Android is kitkat or higher
+        if (Build.VERSION.SDK_INT >= 19) {
+
+            // Set the status bar to dark-semi-transparentish
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS,
+                    WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+            getWindow().setFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION,WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
 
 
+            // Set paddingTop of toolbar to height of status bar.
+            // Fixes statusbar covers toolbar issue
+            appDrawerMainContainer.setPadding(0, getStatusBarHeight(), 0, getNavigationBarHeight());
+        }
 
 
         appTrayFadeInOut = false;
@@ -196,6 +221,26 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
        // bottomDrawerToggleWithAnim();
     }
 
+    // A method to find height of the status bar
+    public int getStatusBarHeight() {
+        int result = 0;
+        int resourceId = getResources().getIdentifier("status_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            result = getResources().getDimensionPixelSize(resourceId);
+        }
+        return result;
+    }
+
+    //method for getting the height of navigation bar
+
+    public int getNavigationBarHeight(){
+        Resources resources = this.getResources();
+        int resourceId = resources.getIdentifier("navigation_bar_height", "dimen", "android");
+        if (resourceId > 0) {
+            return resources.getDimensionPixelSize(resourceId);
+        }
+        return 0;
+    }
 
     @Override
     protected void onResume() {
@@ -291,6 +336,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         bottomDrawerbutton8 = (ImageView)findViewById(R.id.bottomDrawerApp8);
         bottomDrawerbutton9 = (ImageView)findViewById(R.id.bottomDrawerApp9);
         bottomDrawerbutton10 = (ImageView)findViewById(R.id.bottomDrawerApp10);
+        bottomDrawerbutton11 = (ImageView)findViewById(R.id.bottomDrawerApp11);
+        bottomDrawerbutton12 = (ImageView)findViewById(R.id.bottomDrawerApp12);
+        bottomDrawerbutton13 = (ImageView)findViewById(R.id.bottomDrawerApp13);
+        bottomDrawerbutton14 = (ImageView)findViewById(R.id.bottomDrawerApp14);
+        bottomDrawerbutton15 = (ImageView)findViewById(R.id.bottomDrawerApp15);
 
         brightnessBar = (SeekBar) findViewById(R.id.bottomDrawerAppBrightnessSlider);
 
@@ -840,6 +890,106 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             }
 
         });
+        bottomDrawerbutton11.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
+                getApplicationListForBottomDrawer(bottomDrawerbutton11, sPrefs.SP_APP15);
+            }
+
+            public void onSingleTap() {
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(15));
+                if (packReturnVal == -1) {
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                } else {
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(15));
+                }
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton12.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
+                getApplicationListForBottomDrawer(bottomDrawerbutton12, sPrefs.SP_APP16);
+            }
+
+            public void onSingleTap() {
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(16));
+                if (packReturnVal == -1) {
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                } else {
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(16));
+                }
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton13.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
+                getApplicationListForBottomDrawer(bottomDrawerbutton13, sPrefs.SP_APP17);
+            }
+
+            public void onSingleTap() {
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(17));
+                if (packReturnVal == -1) {
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                } else {
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(17));
+                }
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton14.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
+                getApplicationListForBottomDrawer(bottomDrawerbutton14, sPrefs.SP_APP18);
+            }
+
+            public void onSingleTap() {
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(18));
+                if (packReturnVal == -1) {
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                } else {
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(18));
+                }
+                startActivity(launchIntent);
+            }
+
+        });
+        bottomDrawerbutton15.setOnTouchListener(new OnSwipeTouchListener(this) {
+            public void onLongPressDown() {
+                appDrawerClickListener.hapticVibreationFeedback();
+                getApplicationListForBottomDrawer(bottomDrawerbutton15, sPrefs.SP_APP19);
+            }
+
+            public void onSingleTap() {
+                bottomDrawerToggleWithAnim();
+                Intent launchIntent;
+
+                packReturnVal = packages.searchAndReturnPackage(sPrefs.getSelectedApp(19));
+                if (packReturnVal == -1) {
+                    launchIntent = packagemanager.getLaunchIntentForPackage("com.durbinsoft.amarlauncher");
+                } else {
+                    launchIntent = packagemanager.getLaunchIntentForPackage(sPrefs.getSelectedApp(19));
+                }
+                startActivity(launchIntent);
+            }
+
+        });
 
         brightnessBar.setOnSeekBarChangeListener(new SeekBar.OnSeekBarChangeListener() {
             int seekBarProgress = 0;
@@ -875,13 +1025,55 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     }
 
     private void appDrawerToggleWithAnim(){
-        appDrawerView.setVisibility(View.VISIBLE);
         if (isAppDrawerVisible) {
-            YoYo.with(Techniques.ZoomOutDown).duration(600).playOn(appDrawerView);
+            YoYo.with(Techniques.ZoomOutDown).duration(600).interpolate(new AccelerateDecelerateInterpolator())
+                    .withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
+                            appDrawerView.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+                    }).playOn(appDrawerView);
             isAppDrawerVisible = false;
         }else{
+            appDrawerView.setVisibility(View.VISIBLE);
             YoYo.with(Techniques.ZoomInUp)
-                    .duration(600)
+                    .duration(600).interpolate(new AccelerateDecelerateInterpolator())
+                    .withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
+                            appDrawerView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+                    })
                     .playOn(appDrawerView);
             isAppDrawerVisible = true;
         }
@@ -891,11 +1083,53 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     private void bottomDrawerToggleWithAnim(){
         bottomDrawerView.setVisibility(View.VISIBLE);
         if (isBottomDrawerVisible) {
-            YoYo.with(Techniques.FlipOutX).duration(250).playOn(bottomDrawerView);
+            YoYo.with(Techniques.FlipOutX).duration(250).interpolate(new AccelerateDecelerateInterpolator())
+                    .withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
+                            bottomDrawerView.setVisibility(View.GONE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+                    }).playOn(bottomDrawerView);
             isBottomDrawerVisible = false;
         }else{
             YoYo.with(Techniques.FlipInX)
-                    .duration(400)
+                    .duration(400).interpolate(new AccelerateDecelerateInterpolator())
+                    .withListener(new com.nineoldandroids.animation.Animator.AnimatorListener() {
+                        @Override
+                        public void onAnimationStart(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationEnd(com.nineoldandroids.animation.Animator animation) {
+                            bottomDrawerView.setVisibility(View.VISIBLE);
+                        }
+
+                        @Override
+                        public void onAnimationCancel(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+
+                        @Override
+                        public void onAnimationRepeat(com.nineoldandroids.animation.Animator animation) {
+
+                        }
+                    })
                     .playOn(bottomDrawerView);
             isBottomDrawerVisible = true;
             checkSystemStatus();
@@ -942,7 +1176,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 @Override
                 public void onAnimationEnd(android.animation.Animator animation) {
                     super.onAnimationEnd(animation);
-                    home_menu_item_mainbg.setVisibility(View.INVISIBLE);
+                    home_menu_item_mainbg.setVisibility(View.GONE);
                 }
             });
             isMenuLongPressedVisible=false;
@@ -954,6 +1188,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 @Override
                 public void onAnimationEnd(android.animation.Animator animation) {
                     super.onAnimationEnd(animation);
+                    home_menu_item_mainbg.setVisibility(View.VISIBLE);
                 }
             });
 
@@ -1003,7 +1238,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 public void run() {
                     YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_feedback);
                 }
-            }, menuAnimInterval*4);
+            }, menuAnimInterval * 4);
             handler.postDelayed(new Runnable() {
                 public void run() {
                     YoYo.with(Techniques.BounceIn).duration(600).playOn(home_menu_theme);
@@ -1021,8 +1256,8 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
     }
 
     private void setBottomDrawerApps(){
-        String [] items = new String[14];
-        int [] itemsIcon = new int[14];
+        String [] items = new String[19];
+        int [] itemsIcon = new int[19];
 
         items[0] = sPrefs.getSelectedApp(1);
         items[1] = sPrefs.getSelectedApp(2);
@@ -1038,6 +1273,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         items[11] = sPrefs.getSelectedApp(12);
         items[12] = sPrefs.getSelectedApp(13);
         items[13] = sPrefs.getSelectedApp(14);
+        items[14] = sPrefs.getSelectedApp(15);
+        items[15] = sPrefs.getSelectedApp(16);
+        items[16] = sPrefs.getSelectedApp(17);
+        items[17] = sPrefs.getSelectedApp(18);
+        items[18] = sPrefs.getSelectedApp(19);
 
         itemsIcon[0] = packages.searchAndReturnPackage(items[0]);
         itemsIcon[1] = packages.searchAndReturnPackage(items[1]);
@@ -1054,6 +1294,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         itemsIcon[11] = packages.searchAndReturnPackage(items[11]);
         itemsIcon[12] = packages.searchAndReturnPackage(items[12]);
         itemsIcon[13] = packages.searchAndReturnPackage(items[13]);
+        itemsIcon[14] = packages.searchAndReturnPackage(items[14]);
+        itemsIcon[15] = packages.searchAndReturnPackage(items[15]);
+        itemsIcon[16] = packages.searchAndReturnPackage(items[16]);
+        itemsIcon[17] = packages.searchAndReturnPackage(items[17]);
+        itemsIcon[18] = packages.searchAndReturnPackage(items[18]);
 
         appDrawerBuuton1.setImageDrawable(packages.getIcon(itemsIcon[0]));
         appDrawerBuuton2.setImageDrawable(packages.getIcon(itemsIcon[1]));
@@ -1070,6 +1315,11 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
         bottomDrawerbutton8.setImageDrawable(packages.getIcon(itemsIcon[11]));
         bottomDrawerbutton9.setImageDrawable(packages.getIcon(itemsIcon[12]));
         bottomDrawerbutton10.setImageDrawable(packages.getIcon(itemsIcon[13]));
+        bottomDrawerbutton11.setImageDrawable(packages.getIcon(itemsIcon[14]));
+        bottomDrawerbutton12.setImageDrawable(packages.getIcon(itemsIcon[15]));
+        bottomDrawerbutton13.setImageDrawable(packages.getIcon(itemsIcon[16]));
+        bottomDrawerbutton14.setImageDrawable(packages.getIcon(itemsIcon[17]));
+        bottomDrawerbutton15.setImageDrawable(packages.getIcon(itemsIcon[18]));
     }
 
     public void dialerClicked(){
@@ -1130,19 +1380,25 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
         // direction true == in and false == out
         if(!isAppTrayVisible){
-
             if(sPrefs.getSlideImg().equals("null")){
                 //change the default picture to a custom picture (tap to add image)
                 Bitmap tmpImg = BitmapFactory.decodeResource(getResources(), R.drawable.defaultaddicon);
                 profImageView.setBackground(new BitmapDrawable(getResources(),tmpImg));
             }else{
                 Bitmap bmp = null;
-                BitmapFactory.Options options = new BitmapFactory.Options();
-                options.inSampleSize = 2;
-
-                bmp = BitmapFactory
-                        .decodeFile(sPrefs.getSlideImg(),options);
-                bmp = Bitmap.createScaledBitmap(bmp,  bmp.getWidth(), bmp.getHeight(), false);
+               // BitmapFactory.Options options = new BitmapFactory.Options();
+               // options.inSampleSize = 2;
+                //bmp = BitmapFactory
+                  //      .decodeFile(sPrefs.getSlideImg(),options);
+                //bmp = Bitmap.createScaledBitmap(bmp,  bmp.getWidth(), bmp.getHeight(), false);
+                if (bmp == null) {
+                    try {
+                        File filePath = getFileStreamPath("signatureProPic.png");
+                        FileInputStream fi = new FileInputStream(filePath);
+                        bmp = BitmapFactory.decodeStream(fi);
+                    } catch (Exception ex) {
+                    }
+                }
 
                 profImageView.setBackground(new BitmapDrawable(getResources(),bmp));
             }
@@ -1156,6 +1412,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
 
             leftDrawerNameText.setTypeface(custom_font);
             leftDrawerNameText.setText(sPrefs.getSignature());
+            leftDrawerNameText.setTextColor(Color.BLACK);
            // sv.fullScroll(View.FOCUS_UP);
             leftDrawerClockTimeText.setText(myCalenderConversion.returnConvertedTime());
             leftDrawerClockDateText.setText(myCalenderConversion.retunConvertedDate());
@@ -1163,13 +1420,18 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
             homeClockContainer.animate().translationX(slideDrawerView.getWidth());
             slideDrawerView.setVisibility(View.VISIBLE);
             slideDrawerView.setAlpha(0.0f);
-            slideDrawerView.animate().translationX(widthPixels).alpha(1.0f);
+            slideDrawerView.animate().translationX(widthPixels).alpha(1.0f).setListener(new AnimatorListenerAdapter(){
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    slideDrawerView.setVisibility(View.VISIBLE);
+                }
+            });
             isAppTrayVisible = true;
 
             Calendar c = Calendar.getInstance();
-
-
-            myCalendarView.setDateSelected(c.getTime(),true);
+            myCalendarView.clearSelection();
+            myCalendarView.setDateSelected(c.getTime(), true);
 
         }else{
             mainHomeView.animate().translationX(0);
@@ -1178,7 +1440,7 @@ public class AppDrawerActivity extends Activity implements View.OnClickListener{
                 @Override
                 public void onAnimationEnd(android.animation.Animator animation) {
                     super.onAnimationEnd(animation);
-                    slideDrawerView.setVisibility(View.VISIBLE);
+                    slideDrawerView.setVisibility(View.GONE);
                 }
             });
             isAppTrayVisible = false;

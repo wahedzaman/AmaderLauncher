@@ -2,6 +2,7 @@ package com.durbinsoft.amarlauncher;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -16,10 +17,13 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 
+import java.io.File;
 import java.io.FileDescriptor;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 
-public class LeftDrawerActivity extends Activity  {
+public class LeftDrawerActivity extends Activity {
 
     EditText signatureET;
     SharedPreferences sp;
@@ -42,39 +46,44 @@ public class LeftDrawerActivity extends Activity  {
         initiateSpData();
     }
 
-    private void initiateSpData(){
+    private void initiateSpData() {
         imageView = (ImageView) findViewById(R.id.leftSidePicSettings);
-        sp = getSharedPreferences(SP_NAME,MODE_PRIVATE);
+        sp = getSharedPreferences(SP_NAME, MODE_PRIVATE);
         signature = sp.getString(SP_SIG, "Durbin Launcher");
         imagePath = sp.getString(SP_SETT_IMG_PATH, "null");
 
-        signatureET = (EditText)findViewById(R.id.signatureLeftSide);
+        signatureET = (EditText) findViewById(R.id.signatureLeftSide);
         signatureET.setText(signature);
 
-        if(imagePath.equals("null")){
+        if (imagePath.equals("null")) {
             Bitmap tmpImg = BitmapFactory.decodeResource(getResources(), R.drawable.defaultaddicon);
             imageView.setImageBitmap(tmpImg);
-        }else{
+        } else {
             Bitmap bmp = null;
-            BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 2;
+           // BitmapFactory.Options options = new BitmapFactory.Options();
+          //  options.inSampleSize = 2;
+        //    bmp = BitmapFactory
+         //           .decodeFile(imagePath, options);
+       //     bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false);
 
-            bmp = BitmapFactory
-                    .decodeFile(imagePath,options);
-            bmp = Bitmap.createScaledBitmap(bmp, bmp.getWidth(), bmp.getHeight(), false);
+           bmp = getThumbnail("signatureProPic.png");
 
             imageView.setImageBitmap(bmp);
         }
     }
 
-    public void cancelClicked(View v){
+    public void cancelClicked(View v) {
         finish();
     }
 
-    public void saveClicked(View v){
+    public void saveClicked(View v) {
         edit = sp.edit();
-        edit.putString(SP_SIG,signatureET.getText().toString());
-        edit.putString(SP_SETT_IMG_PATH,imagePath);
+        String sign = signatureET.getText().toString();
+        if((sign.equals(""))||(sign.equals(null))){
+            sign = "Durbin Launcher";
+        }
+        edit.putString(SP_SIG, sign);
+        edit.putString(SP_SETT_IMG_PATH, imagePath);
         edit.commit();
         finish();
     }
@@ -85,7 +94,7 @@ public class LeftDrawerActivity extends Activity  {
 
         if (requestCode == RESULT_LOAD_IMAGE && resultCode == RESULT_OK && null != data) {
             Uri selectedImage = data.getData();
-            String[] filePathColumn = { MediaStore.Images.Media.DATA };
+            String[] filePathColumn = {MediaStore.Images.Media.DATA};
 
             Cursor cursor = getContentResolver().query(selectedImage,
                     filePathColumn, null, null, null);
@@ -99,13 +108,16 @@ public class LeftDrawerActivity extends Activity  {
 
             Bitmap bmp = null;
             BitmapFactory.Options options = new BitmapFactory.Options();
-            options.inSampleSize = 4;
+            options.inSampleSize = 2;
 
             bmp = BitmapFactory
-                    .decodeFile(picturePath,options);
-            bmp = Bitmap.createScaledBitmap(bmp, 300, 200, false);
+                    .decodeFile(picturePath, options);
+          //  bmp = Bitmap.createScaledBitmap(bmp, 300, 200, false);
+
+            bmp = Bitmap.createScaledBitmap(bmp,  bmp.getWidth(), bmp.getHeight(), false);
 
             imageView.setImageBitmap(bmp);
+            saveImageToInternalStorage(bmp);
 
         }
 
@@ -117,34 +129,67 @@ public class LeftDrawerActivity extends Activity  {
         ParcelFileDescriptor parcelFileDescriptor =
                 getContentResolver().openFileDescriptor(uri, "r");
         FileDescriptor fileDescriptor = parcelFileDescriptor.getFileDescriptor();
-        Bitmap image ;
-        bmp= BitmapFactory.decodeFileDescriptor(fileDescriptor);
+        Bitmap image;
+        bmp = BitmapFactory.decodeFileDescriptor(fileDescriptor);
 
         parcelFileDescriptor.close();
-        image = Bitmap.createScaledBitmap(bmp,300,200,false);
+        image = Bitmap.createScaledBitmap(bmp, 300, 200, false);
         return image;
     }
 
     public void selectImage(View v) {
-        final CharSequence[] items = {"Choose From Gallery", "Cancel" };
+        final CharSequence[] items = {"Choose From Gallery", "Cancel"};
         AlertDialog.Builder builder = new AlertDialog.Builder(this);
         builder.setTitle("Select Picture!");
         builder.setItems(items, new DialogInterface.OnClickListener() {
             @Override
             public void onClick(DialogInterface dialog, int item) {
-             if (items[item].equals("Choose From Gallery")) {
+                if (items[item].equals("Choose From Gallery")) {
                     Intent intent = new Intent(
                             Intent.ACTION_PICK,
                             android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
                     intent.setType("image/*");
                     startActivityForResult(
-                            Intent.createChooser(intent, "Select File"),RESULT_LOAD_IMAGE);
+                            Intent.createChooser(intent, "Select File"), RESULT_LOAD_IMAGE);
                 } else if (items[item].equals("Cancel")) {
-                 dialog.dismiss();
+                    dialog.dismiss();
                 }
             }
         });
         builder.show();
+    }
+
+
+    public boolean saveImageToInternalStorage(Bitmap image) {
+
+        try {
+            // Use the compress method on the Bitmap object to write image to
+            // the OutputStream
+            FileOutputStream fos = openFileOutput("signatureProPic.png", Context.MODE_PRIVATE);
+
+            // Writing the bitmap to the output stream
+            image.compress(Bitmap.CompressFormat.PNG, 100, fos);
+            fos.close();
+
+            return true;
+        } catch (Exception e) {
+            return false;
+        }
+    }
+
+    public Bitmap getThumbnail(String filename) {
+        Bitmap thumbnail = null;
+
+        // If no file on external storage, look in internal storage
+        if (thumbnail == null) {
+            try {
+                File filePath = getFileStreamPath(filename);
+                FileInputStream fi = new FileInputStream(filePath);
+                thumbnail = BitmapFactory.decodeStream(fi);
+            } catch (Exception ex) {
+            }
+        }
+        return thumbnail;
     }
 
 }

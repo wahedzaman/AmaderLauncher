@@ -8,6 +8,7 @@
     <style name="CustomTheme" parent="android:Theme.Holo.Wallpaper.NoTitleBar">
         <!--  <item name="android:windowTranslucentNavigation">false</item>
         <item name="android:windowTranslucentStatus">false</item> -->
+
     </style>
 
 

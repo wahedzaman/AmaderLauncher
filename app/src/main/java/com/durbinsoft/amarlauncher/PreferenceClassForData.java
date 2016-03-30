@@ -31,6 +31,11 @@ public class PreferenceClassForData {
     private static String app12;
     private static String app13;
     private static String app14;
+    private static String app15;
+    private static String app16;
+    private static String app17;
+    private static String app18;
+    private static String app19;
 
     private static String Happ1;
     private static String Happ2;
@@ -72,6 +77,11 @@ public class PreferenceClassForData {
     public String SP_APP12 = "AMAR_LAUNCHER_APP12";
     public String SP_APP13 = "AMAR_LAUNCHER_APP13";
     public String SP_APP14 = "AMAR_LAUNCHER_APP14";
+    public String SP_APP15 = "AMAR_LAUNCHER_APP15";
+    public String SP_APP16 = "AMAR_LAUNCHER_APP16";
+    public String SP_APP17 = "AMAR_LAUNCHER_APP17";
+    public String SP_APP18 = "AMAR_LAUNCHER_APP18";
+    public String SP_APP19 = "AMAR_LAUNCHER_APP19";
 
     public String SP_HAPP1 = "AMAR_LAUNCHER_HAPP1";
     public String SP_HAPP2 = "AMAR_LAUNCHER_HAPP2";
@@ -143,6 +153,11 @@ public class PreferenceClassForData {
         app12 = sp.getString(SP_APP12, "com.durbinsoft.amarlauncher");
         app13 = sp.getString(SP_APP13, "com.durbinsoft.amarlauncher");
         app14 = sp.getString(SP_APP14, "com.durbinsoft.amarlauncher");
+        app15 = sp.getString(SP_APP15, "com.durbinsoft.amarlauncher");
+        app16 = sp.getString(SP_APP16, "com.durbinsoft.amarlauncher");
+        app17 = sp.getString(SP_APP17, "com.durbinsoft.amarlauncher");
+        app18 = sp.getString(SP_APP18, "com.durbinsoft.amarlauncher");
+        app19 = sp.getString(SP_APP19, "com.durbinsoft.amarlauncher");
 
         if(hiddenAppsNumber>0){
             Happ1 = sp.getString(SP_HAPP1, "com.durbinsoft.amarlauncher");
@@ -207,6 +222,21 @@ public class PreferenceClassForData {
                 break;
             case 14:
                 val = app14;
+                break;
+            case 15:
+                val = app15;
+                break;
+            case 16:
+                val = app16;
+                break;
+            case 17:
+                val = app17;
+                break;
+            case 18:
+                val = app18;
+                break;
+            case 19:
+                val = app19;
                 break;
         }
         return  val;
@@ -306,7 +336,7 @@ public class PreferenceClassForData {
     public void setApps(String ap1,String appPositionPrefsName){
         spHeader();
         if(appPositionPrefsName.equals("null")){
-            for(int i=0;i<10;i++){
+            for(int i=0;i<15;i++){
                 if(getSelectedApp(i).equals(ap1)){
                     appPositionPrefsName = "SP_APP"+(5+i);
                 }
